@@ -1,0 +1,11 @@
+module(..., package.seeall)
+
+require(_NAME .. '.utils')
+require(_NAME .. '.List')
+require(_NAME .. '.Set')
+require(_NAME .. '.Point')
+require(_NAME .. '.Map')
+require(_NAME .. '.SparseMap')
+require(_NAME .. '.Clock')
+require(_NAME .. '.Tween')
+require(_NAME .. '.Promise')

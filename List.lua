@@ -29,6 +29,16 @@ function List:shift()
    return table.remove(self.items, 1)
 end
 
+-- Remove first occurrence of item (using ==)
+function List:remove(item)
+    for n, c in ipairs(self.items) do
+        if c == item then
+            table.remove(self.items, n)
+            return true
+        end
+    end
+end
+
 ----------------------------------------
 
 function List:push_all(items)

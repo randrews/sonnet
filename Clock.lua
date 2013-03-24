@@ -1,9 +1,10 @@
 module(..., package.seeall)
 local utils = require(_PACKAGE .. 'utils')
+local List = require(_PACKAGE .. 'List')
 
 local Clock = utils.public_class('Clock')
 
-Clock.all_clocks = {}
+Clock.all = List()
 
 function Clock:initialize(delay, callback, ...)
    assert(delay > 0, "Delay must be greater than 0 seconds")
@@ -14,7 +15,7 @@ function Clock:initialize(delay, callback, ...)
    self.elapsed = 0
    self.args = {...}
 
-   table.insert(Clock.all_clocks, self)
+   Clock.all:push(self)
 end
 
 function Clock.static.oneoff(delay, callback, ...)
@@ -40,19 +41,13 @@ function Clock:update(dt)
 end
 
 function Clock:stop()
-   for n, c in ipairs(Clock.all_clocks) do
-      if c == self then
-         table.remove(Clock.all_clocks, n)
-         return
-      end
-   end
-   error("Clock not active!")
+    if not Clock.all:remove(n) then
+        error("Clock not active!")
+    end
 end
 
 function Clock.static.update(dt)
-   for _, c in ipairs(Clock.all_clocks) do
-      c:update(dt)
-   end
+    Clock.all:method_each('update', dt)
 end
 
 return Clock

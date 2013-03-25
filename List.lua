@@ -113,7 +113,7 @@ function List:each(fn, ...)
     end
 end
 
-function List:method_each(fn, ...)
+function List:method_each(fn_name, ...)
    for _, item in ipairs(self.items) do
       local fn = item[fn_name]
       fn(item, ...)

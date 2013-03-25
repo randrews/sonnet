@@ -1,8 +1,8 @@
 module(..., package.seeall)
 local utils = require(_PACKAGE .. 'utils')
-local middleclass = require(_PACKAGE .. 'middleclass')
 local Clock = require(_PACKAGE .. 'Clock')
 local Tween = require(_PACKAGE .. 'Tween')
+local Effect = require(_PACKAGE .. 'Effect')
 local List = require(_PACKAGE .. 'List')
 
 local Scene = utils.public_class('Scene')
@@ -72,7 +72,7 @@ function Scene:install()
 
     self:on_install()
     love.update = function(dt) self:update_with_sonnet(dt) end
-    love.draw = function() self:draw() end
+    love.draw = function() self:draw_with_sonnet() end
     love.keypressed = function(k, u) self:keypressed(k, u) end
     love.mousepressed = function(x, y, b) self:mousepressed(x, y, b) end
 end
@@ -80,7 +80,13 @@ end
 function Scene:update_with_sonnet(dt)
     Clock.update(dt)
     Tween.update(dt)
+    Effect.update(dt)
     self:update(dt)
+end
+
+function Scene:draw_with_sonnet(dt)
+    self:draw()
+    Effect.draw()
 end
 
 function Scene:pause()
@@ -88,8 +94,10 @@ function Scene:pause()
 
     self.clocks = Clock.all
     self.tweens = Tween.all
+    self.effects = Effect.all
     Clock.all = List()
     Tween.all = List()
+    Effect.all = List()
 end
 
 function Scene:resume()
@@ -99,6 +107,9 @@ function Scene:resume()
 
         Tween.all = self.tweens
         self.tweens = nil
+
+        Effect.all = self.effects
+        self.effects = nil
 
         self:on_resume()
     else

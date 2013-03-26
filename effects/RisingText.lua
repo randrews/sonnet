@@ -1,7 +1,8 @@
 module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local Tween = require(_PACKAGE .. 'Tween')
-local Effect = require(_PACKAGE .. 'Effect')
+local _SONNET = (...):match("(%w+[.])")
+local utils = require(_SONNET .. 'utils')
+local Tween = require(_SONNET .. 'Tween')
+local Effect = require(_SONNET .. 'Effect')
 
 local RisingText = utils.public_class('RisingText', Effect)
 
@@ -28,7 +29,7 @@ function RisingText:draw()
 end
 
 function RisingText.static.demoScene()
-    local Scene = require(_PACKAGE .. 'Scene')
+    local Scene = require(_SONNET .. 'Scene')
     local Demo = Scene:subclass('Demo')
 
     function Demo:initialize() self.n = 1 end

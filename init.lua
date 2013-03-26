@@ -11,3 +11,6 @@ require(_NAME .. '.Tween')
 require(_NAME .. '.Promise')
 require(_NAME .. '.Scene')
 require(_NAME .. '.Effect')
+
+require(_NAME .. '.effects.RisingText')
+require(_NAME .. '.effects.Sparks')

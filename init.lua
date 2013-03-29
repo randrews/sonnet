@@ -9,6 +9,7 @@ require(_NAME .. '.SparseMap')
 require(_NAME .. '.Clock')
 require(_NAME .. '.Tween')
 require(_NAME .. '.Promise')
+require(_NAME .. '.Messenger')
 require(_NAME .. '.Scene')
 require(_NAME .. '.Effect')
 

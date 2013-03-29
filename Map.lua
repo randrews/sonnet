@@ -89,7 +89,7 @@ function Map:each(start, w, h)
              if p.x > maxx then p = Point(start.x, p.y+1) end
 
              if r.y > maxy then return nil
-             else return r end
+             else return r, self:at(r) end
           end
 end
 

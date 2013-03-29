@@ -1,6 +1,7 @@
 module(..., package.seeall)
 local utils = require(_PACKAGE .. 'utils')
 local List = require(_PACKAGE .. 'List')
+local Promise = require(_PACKAGE .. 'Promise')
 
 local Tween = utils.public_class('Tween')
 
@@ -33,7 +34,15 @@ function Tween:update(dt)
     if self.time >= self.duration then
         self.value = self.to
         self.finished = true
+        if self._promise then self._promise:finish(self) end
     end
+end
+
+function Tween:promise()
+    if not self._promise then
+        self._promise = Promise()
+    end
+    return self._promise
 end
 
 function Tween.static.test()

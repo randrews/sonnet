@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Messenger.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">Clock.lua</a>
+  <a class="source" href="Effect.html">Effect.lua</a>
+  <a class="source" href="init.html">init.lua</a>
+  <a class="source" href="List.html">List.lua</a>
+  <a class="source" href="Map.html">Map.lua</a>
+  <a class="source" href="Messenger.html">Messenger.lua</a>
+  <a class="source" href="middleclass.html">middleclass.lua</a>
+  <a class="source" href="Point.html">Point.lua</a>
+  <a class="source" href="Promise.html">Promise.lua</a>
+  <a class="source" href="Scene.html">Scene.lua</a>
+  <a class="source" href="Set.html">Set.lua</a>
+  <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="Tween.html">Tween.lua</a>
+  <a class="source" href="utils.html">utils.lua</a>
+  <a class="source" href="RisingText.html">effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              Messenger.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+<p>Broadcasts messages and lets things subscribe to messages.</p>
+
+<p>A <em>message</em> is a string, with an optional set of arguments:</p>
+<pre><code>Messenger.send("player_jump", player_loc)
+</code></pre>
+
+<p>A <em>subscriber</em> is a function that wants to be notified about
+that kind of message:</p>
+<pre><code>Messenger.subscribe("player_jump", handle_jump)
+</code></pre>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
+
+<span class="k">local</span> Messenger = utils.public_class(<span class="s">'Messenger'</span>)
+</pre></div>
+</td>
+</tr><tr id="section-2">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-2">&#182;</a>
+  </div>
+  
+<h2>Subscription table</h2>
+<p>This maps from message name to <a href="List.html">List</a> of subscribers.
+The message names
+are always strings, the subscribers are either functions
+or tables containing {function_name, object} (if they used <code>method_subscribe</code>)</p>
+
+<p>This may be swapped out and replaced when scenes are changed,
+see <a href="Scene.html">Scene</a>.</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>Messenger.static.subscriptions = {}
+</pre></div>
+</td>
+</tr><tr id="section-3">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-3">&#182;</a>
+  </div>
+  
+<hr/>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+</pre></div>
+</td>
+</tr><tr id="section-4">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-4">&#182;</a>
+  </div>
+  
+<h2>Send</h2>
+<p>Send a message to all subscribers (if any)</p>
+
+<ul>
+    <li><strong>message</strong> is a string for the message type</li>
+    <li>Other args are passed to all the subscribers</li>
+</ul>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Messenger.static.send</span>(message, ...)
+    <span class="k">local</span> sub_list = Messenger.subscriptions[message]
+    <span class="k">if</span> sub_list <span class="k">then</span>
+        <span class="k">for</span> _, subscriber <span class="k">in</span> sub_list:each() <span class="k">do</span>
+            <span class="k">if</span> <span class="nt">type</span>(subscriber) == <span class="s">'table'</span> <span class="k">then</span>
+                <span class="k">local</span> fn_name, obj = <span class="nt">unpack</span>(subscriber)
+                <span class="k">local</span> fn = obj[fn_name]
+                fn(obj, ...)
+            <span class="k">elseif</span> <span class="nt">type</span>(subscriber) == <span class="s">'function'</span> <span class="k">then</span>
+                subscriber(...)
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<h2>Subscribe</h2>
+<p>Add a function to the subscriber list for a message type</p>
+
+<ul>
+    <li><strong>message</strong> is a string for the message type</li>
+    <li><strong>fn</strong> is the function to handle it</li>
+</ul>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Messenger.static.subscribe</span>(message, fn)
+    <span class="k">if</span> <span class="o">not</span> Messenger.subscriptions[message] <span class="k">then</span>
+        Messenger.subscriptions[message] = List()
+    <span class="k">end</span>
+
+    <span class="k">local</span> subs = Messenger.subscriptions[message]
+    subs:push(fn)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-6">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-6">&#182;</a>
+  </div>
+  
+<h2>Method Subscribe</h2>
+<p>Add an object method to the subscriber list for a message type</p>
+
+<ul>
+    <li><strong>message</strong> is a string for the message type</li>
+    <li><strong>obj</strong> is the object to invoke a method on</li>
+    <li><strong>method_name</strong> is the name of the method to invoke.</li>
+</ul>
+
+<p>method_name is optional, defaults to message.</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Messenger.static.method_subscribe</span>(message, obj, method_name)
+    <span class="k">if</span> <span class="o">not</span> Messenger.subscriptions[message] <span class="k">then</span>
+        Messenger.subscriptions[message] = List()
+    <span class="k">end</span>
+
+    <span class="k">local</span> subs = Messenger.subscriptions[message]
+    <span class="k">local</span> sub = {method_name <span class="o">or</span> message, obj}
+    subs:push(sub)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<hr/>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+</pre></div>
+</td>
+</tr><tr id="section-8">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-8">&#182;</a>
+  </div>
+  
+<h2>Test</h2>
+<p>A unit test</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Messenger.static.test</span>()
+    <span class="k">local</span> a = <span class="k">false</span>
+    <span class="k">local</span> a2 = <span class="k">false</span>
+    <span class="k">local</span> b = <span class="k">false</span>
+
+    Messenger.subscribe(<span class="s">'a'</span>, <span class="k">function</span>(x) <span class="nt">assert</span>(x==1) ; a = <span class="k">true</span> <span class="k">end</span>)
+    Messenger.subscribe(<span class="s">'a'</span>, <span class="k">function</span>(x) <span class="nt">assert</span>(x==1) ; a2 = <span class="k">true</span> <span class="k">end</span>)
+    Messenger.subscribe(<span class="s">'b'</span>, <span class="k">function</span>() b = <span class="k">true</span> <span class="k">end</span>)
+
+    Messenger.send(<span class="s">'a'</span>, 1)
+    <span class="nt">assert</span>(a <span class="o">and</span> a2 <span class="o">and</span> <span class="o">not</span> b)
+
+    <span class="k">local</span> obj = { flag = <span class="k">false</span>, flag2 = <span class="k">false</span> }
+
+    Messenger.method_subscribe(<span class="s">'c'</span>, obj)
+
+    obj.c = <span class="k">function</span>(self, val)
+                <span class="nt">assert</span>(val == 2)
+                self.flag = <span class="k">true</span>
+            <span class="k">end</span>
+
+    Messenger.send(<span class="s">'c'</span>, 2)
+    <span class="nt">assert</span>(obj.flag)
+
+    obj.set_flag2 = <span class="k">function</span>(self) self.flag2 = <span class="k">true</span> <span class="k">end</span>
+    Messenger.method_subscribe(<span class="s">'d'</span>, obj, <span class="s">'set_flag2'</span>)
+    Messenger.send(<span class="s">'d'</span>)
+    <span class="nt">assert</span>(obj.flag2)
+<span class="k">end</span>
+
+<span class="k">return</span> Messenger
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

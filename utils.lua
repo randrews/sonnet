@@ -8,3 +8,9 @@ function public_class(...)
     _G[_SONNET][klass.name] = klass
     return klass
 end
+
+function submodule_class(submodule, ...)
+    local klass = middleclass.class(...)
+    _G[_SONNET][submodule][klass.name] = klass
+    return klass
+end

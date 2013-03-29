@@ -4,7 +4,7 @@ local utils = require(_SONNET .. 'utils')
 local Tween = require(_SONNET .. 'Tween')
 local Effect = require(_SONNET .. 'Effect')
 
-local RisingText = utils.public_class('RisingText', Effect)
+local RisingText = utils.submodule_class('effects', 'RisingText', Effect)
 
 function RisingText:initialize(x, y, text)
     Effect.initialize(self)

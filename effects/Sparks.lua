@@ -4,7 +4,7 @@ local utils = require(_SONNET .. '.utils')
 local Tween = require(_SONNET .. '.Tween')
 local Effect = require(_SONNET .. '.Effect')
 
-local Sparks = utils.public_class('Sparks', Effect)
+local Sparks = utils.submodule_class('effects', 'Sparks', Effect)
 
 Sparks.image = nil
 

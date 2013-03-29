@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sonnet/Map.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">sonnet/Clock.lua</a>
+  <a class="source" href="Effect.html">sonnet/Effect.lua</a>
+  <a class="source" href="init.html">sonnet/init.lua</a>
+  <a class="source" href="List.html">sonnet/List.lua</a>
+  <a class="source" href="Map.html">sonnet/Map.lua</a>
+  <a class="source" href="middleclass.html">sonnet/middleclass.lua</a>
+  <a class="source" href="Point.html">sonnet/Point.lua</a>
+  <a class="source" href="Promise.html">sonnet/Promise.lua</a>
+  <a class="source" href="Scene.html">sonnet/Scene.lua</a>
+  <a class="source" href="Set.html">sonnet/Set.lua</a>
+  <a class="source" href="SparseMap.html">sonnet/SparseMap.lua</a>
+  <a class="source" href="Tween.html">sonnet/Tween.lua</a>
+  <a class="source" href="utils.html">sonnet/utils.lua</a>
+  <a class="source" href="RisingText.html">sonnet/effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">sonnet/effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              sonnet/Map.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
+<span class="k">local</span> Point = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Point'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
+
+<span class="k">local</span> Map = utils.public_class(<span class="s">'Map'</span>)
+
+<span class="k">function</span> <span class="nf">Map:initialize</span>(width, height, fill)
+    fill = fill <span class="o">or</span> 0
+    self.width = width
+    self.height = height
+
+    <span class="k">local</span> c = {}
+    <span class="k">for</span> i=1, width*height <span class="k">do</span> c[i]=fill <span class="k">end</span>
+    self.cells = List(c)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map.static.new_from_strings</span>(strs)
+   <span class="nt">assert</span>(<span class="nt">type</span>(strs) == <span class="s">'table'</span> <span class="o">and</span> <span class="nt">type</span>(strs[1])==<span class="s">'string'</span>)
+   <span class="k">local</span> l = Map(#(strs[1]), #strs)
+   <span class="k">for</span> p <span class="k">in</span> l:each() <span class="k">do</span>
+      <span class="k">local</span> s = strs[p.y+1]:sub(p.x+1, p.x+1)
+      l:at(p, s)
+   <span class="k">end</span>
+   <span class="k">return</span> l
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map.static.new_from_string</span>(str)
+   <span class="nt">assert</span>(<span class="nt">type</span>(str) == <span class="s">'string'</span>)
+   <span class="k">local</span> strs = {}
+   <span class="k">local</span> line = <span class="s">''</span>
+   <span class="k">for</span> n = 1, #str <span class="k">do</span>
+      <span class="k">local</span> c = str:sub(n,n)
+      <span class="k">if</span> c == <span class="s">"\n"</span> <span class="k">then</span>
+         table.insert(strs, line)
+         line = <span class="s">''</span>
+      <span class="k">else</span>
+         line = line .. c
+      <span class="k">end</span>
+   <span class="k">end</span>
+
+   <span class="k">return</span> Map.new_from_strings(strs)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:at</span>(pt, val)
+   <span class="k">if</span> self:inside(pt) <span class="k">then</span>
+      <span class="k">if</span> val~=<span class="k">nil</span> <span class="k">then</span> self.cells[pt.x+pt.y*self.width] = val <span class="k">end</span>
+      <span class="k">return</span> self.cells[pt.x+pt.y*self.width]
+   <span class="k">else</span>
+      <span class="k">return</span> <span class="k">nil</span>
+   <span class="k">end</span>
+<span class="k">end</span>
+
+Map.__call = Map.at
+
+<span class="k">function</span> <span class="nf">Map:clamp</span>(pt)
+   pt = pt:copy()
+   <span class="k">if</span> pt.x < 0 <span class="k">then</span> pt.x = 0 <span class="k">end</span>
+   <span class="k">if</span> pt.x > self.width-1 <span class="k">then</span> pt.x = self.width-1 <span class="k">end</span>
+   <span class="k">if</span> pt.y < 0 <span class="k">then</span> pt.y = 0 <span class="k">end</span>
+   <span class="k">if</span> pt.y > self.height-1 <span class="k">then</span> pt.y = self.height-1 <span class="k">end</span>
+   <span class="k">return</span> pt
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:inside</span>(pt)
+   <span class="k">return</span> pt >= Point(0, 0) <span class="o">and</span> pt < Point(self.width, self.height)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:clear</span>(value)
+   <span class="k">for</span> p <span class="k">in</span> self:each() <span class="k">do</span>
+      self:at(p, value)
+   <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:each</span>(start, w, h)
+   <span class="k">local</span> maxx, maxy
+
+   <span class="k">if</span> w <span class="k">then</span> maxx = start.x + w-1 <span class="k">else</span> maxx = self.width-1 <span class="k">end</span>
+   <span class="k">if</span> h <span class="k">then</span> maxy = start.y + h-1 <span class="k">else</span> maxy = self.height-1 <span class="k">end</span>
+
+   start = start <span class="o">or</span> Point(0, 0)
+   <span class="k">local</span> p = start
+
+   <span class="k">return</span> <span class="k">function</span>()
+             <span class="k">local</span> r = p <span class="c">-- return this one...
+</span></pre></div>
+</td>
+</tr><tr id="section-2">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-2">&#182;</a>
+  </div>
+  
+<p>Decide what the next one will be:</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>             p = p + Point(1, 0)
+             <span class="k">if</span> p.x > maxx <span class="k">then</span> p = Point(start.x, p.y+1) <span class="k">end</span>
+
+             <span class="k">if</span> r.y > maxy <span class="k">then</span> <span class="k">return</span> <span class="k">nil</span>
+             <span class="k">else</span> <span class="k">return</span> r <span class="k">end</span>
+          <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:__<span class="nt">tostring</span></span>()
+   <span class="k">local</span> s = <span class="s">''</span>
+
+   <span class="k">for</span> y = 0, self.height-1 <span class="k">do</span>
+      <span class="k">for</span> x = 0, self.width-1 <span class="k">do</span>
+         s = s .. <span class="nt">tostring</span>(self:at(Point(x,y))) .. <span class="s">' '</span>
+      <span class="k">end</span>
+      s = s .. <span class="s">"\n"</span>
+   <span class="k">end</span>
+
+   <span class="k">return</span> s
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:find</span>(fn)
+   <span class="nt">assert</span>(<span class="nt">type</span>(fn) == <span class="s">'function'</span>)
+   <span class="k">local</span> fit = List{}
+   <span class="k">for</span> pt <span class="k">in</span> self:each() <span class="k">do</span>
+      <span class="k">if</span> fn(self, pt) <span class="k">then</span> fit:push(pt) <span class="k">end</span>
+   <span class="k">end</span>
+   <span class="k">return</span> fit
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:find_value</span>(value)
+   <span class="k">local</span> fn = <span class="k">function</span>(map, pt) <span class="k">return</span> map(pt) == value <span class="k">end</span>
+   <span class="k">return</span> self:find(fn)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:random</span>(fn)
+   fn = fn <span class="o">or</span> <span class="k">function</span>() <span class="k">return</span> <span class="k">true</span> <span class="k">end</span>
+   <span class="k">local</span> fit = self:find(fn)
+   <span class="k">if</span> fit:empty() <span class="k">then</span> <span class="k">return</span> <span class="k">nil</span>
+   <span class="k">else</span> <span class="k">return</span> fit:random() <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-3">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-3">&#182;</a>
+  </div>
+  
+<hr/>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Map:empty</span>(pt)
+   <span class="k">return</span> self:at(pt) == <span class="s">''</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:full</span>(pt)
+   <span class="k">return</span> <span class="o">not</span> self:empty(pt)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:neighbors</span>(pt, fn, diag)
+   <span class="k">local</span> all = {pt + Point(-1, 0),
+                pt + Point(1, 0),
+                pt + Point(0, -1),
+                pt + Point(0, 1)}
+
+   <span class="k">if</span> diag <span class="k">then</span>
+       table.insert(all, pt+Point.southwest)
+       table.insert(all, pt+Point.northwest)
+       table.insert(all, pt+Point.northeast)
+       table.insert(all, pt+Point.southeast)
+   <span class="k">end</span>
+
+   <span class="k">if</span> fn <span class="o">and</span> <span class="nt">type</span>(fn) ~= <span class="s">'function'</span> <span class="k">then</span>
+       <span class="k">local</span> val = fn
+       fn = <span class="k">function</span>(_, p) <span class="k">return</span> self:at(p) == val <span class="k">end</span>
+   <span class="k">end</span>
+
+   <span class="k">local</span> fit = List{}
+   <span class="k">for</span> _, p <span class="k">in</span> <span class="nt">ipairs</span>(all) <span class="k">do</span>
+       <span class="k">if</span> self:inside(p) <span class="o">and</span> (<span class="o">not</span> fn <span class="o">or</span> fn(self, p)) <span class="k">then</span> fit:push(p) <span class="k">end</span>
+   <span class="k">end</span>
+   <span class="k">return</span> fit
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:connected</span>(start, fn, diag)
+</pre></div>
+</td>
+</tr><tr id="section-4">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-4">&#182;</a>
+  </div>
+  
+<p>Turn a point into a number so we can use it a a table key</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>    <span class="k">local</span> <span class="k">function</span> <span class="nf">num</span>(pt) <span class="k">return</span> pt.x + pt.y * self.width <span class="k">end</span>
+    <span class="k">local</span> points = {[num(start)]=start} <span class="c">-- maps from x+y*width to Point
+</span>    <span class="k">local</span> closed = {}
+    <span class="k">local</span> open = List{start}
+
+    <span class="k">while</span> <span class="o">not</span> open:empty() <span class="k">do</span>
+        <span class="k">local</span> p = open:shift()
+        <span class="k">local</span> n = self:neighbors(p, fn, diag)
+
+        n:each(<span class="k">function</span>(pt)
+                   <span class="k">if</span> <span class="o">not</span> closed[num(pt)] <span class="k">then</span>
+                       open:push(pt)
+                       points[num(pt)] = pt
+                   <span class="k">end</span>
+               <span class="k">end</span>)
+
+        closed[num(p)] = p
+    <span class="k">end</span>
+
+    <span class="k">local</span> points_list = List()
+    <span class="k">for</span> _, p <span class="k">in</span> <span class="nt">pairs</span>(points) <span class="k">do</span> points_list:push(p) <span class="k">end</span>
+    <span class="k">return</span> points_list
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Map:connected_value</span>(start, value, diag)
+    <span class="k">return</span> self:connected(start,
+                          <span class="k">function</span>(map, p) <span class="k">return</span> map:at(p) == value <span class="k">end</span>,
+                          diag)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<hr/>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Map.static.test</span>()
+</pre></div>
+</td>
+</tr><tr id="section-6">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-6">&#182;</a>
+  </div>
+  
+<p>Constructor</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="k">local</span> m = Map(10, 10)
+   <span class="nt">assert</span>(m.width == 10)
+   <span class="nt">assert</span>(m:inside(Point(3,3)))
+   <span class="nt">assert</span>(<span class="o">not</span> m:inside(Point(10,10)))
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<p>clear / set</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   m:clear(0)
+   m:at(Point(3,2),1)
+</pre></div>
+</td>
+</tr><tr id="section-8">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-8">&#182;</a>
+  </div>
+  
+<p>at</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="nt">assert</span>(m:at(Point(1,1)) == 0)
+   <span class="nt">assert</span>(m:at(Point(3,2)) == 1)
+   <span class="nt">assert</span>(m:at(Point(10,10)) == <span class="k">nil</span>)
+</pre></div>
+</td>
+</tr><tr id="section-9">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-9">&#182;</a>
+  </div>
+  
+<p>each</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="k">local</span> n = 0
+   <span class="k">for</span> p <span class="k">in</span> m:each() <span class="k">do</span> n = n + 1 <span class="k">end</span>
+   <span class="nt">assert</span>(n == 100)
+</pre></div>
+</td>
+</tr><tr id="section-10">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-10">&#182;</a>
+  </div>
+  
+<p>fit</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   m:clear(<span class="s">''</span>)
+   m:at(Point(1,0),1)
+   <span class="nt">assert</span>(m:neighbors(Point(5,5)):length() == 4)
+   <span class="nt">assert</span>(m:neighbors(Point(0,1)):length() == 3)
+   <span class="nt">assert</span>(m:neighbors(Point(0,0)):length() == 2)
+   <span class="nt">assert</span>(m:neighbors(Point(0,0), m.empty):length() == 1)
+
+   <span class="k">local</span> n2 = 0
+   <span class="k">for</span> p <span class="k">in</span> m:each(Point(2, 2), 4, 4) <span class="k">do</span> n2 = n2 + 1 <span class="k">end</span>
+   <span class="nt">assert</span>(n2 == 16)
+<span class="k">end</span>
+
+<span class="k">return</span> Map
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

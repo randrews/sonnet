@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sonnet/middleclass.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">sonnet/Clock.lua</a>
+  <a class="source" href="Effect.html">sonnet/Effect.lua</a>
+  <a class="source" href="init.html">sonnet/init.lua</a>
+  <a class="source" href="List.html">sonnet/List.lua</a>
+  <a class="source" href="Map.html">sonnet/Map.lua</a>
+  <a class="source" href="middleclass.html">sonnet/middleclass.lua</a>
+  <a class="source" href="Point.html">sonnet/Point.lua</a>
+  <a class="source" href="Promise.html">sonnet/Promise.lua</a>
+  <a class="source" href="Scene.html">sonnet/Scene.lua</a>
+  <a class="source" href="Set.html">sonnet/Set.lua</a>
+  <a class="source" href="SparseMap.html">sonnet/SparseMap.lua</a>
+  <a class="source" href="Tween.html">sonnet/Tween.lua</a>
+  <a class="source" href="utils.html">sonnet/utils.lua</a>
+  <a class="source" href="RisingText.html">sonnet/effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">sonnet/effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              sonnet/middleclass.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+<p>middleclass.lua - v2.0 (2011-09)
+Copyright (c) 2011 Enrique García Cota
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Based on YaciCode, from Julien Patte and LuaObject, from Sebastien Rocca-Serra</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="nt">module</span>(..., package.seeall)
+
+<span class="k">local</span> _classes = <span class="nt">setmetatable</span>({}, {__mode = <span class="s">"k"</span>})
+
+<span class="k">local</span> <span class="k">function</span> <span class="nf">_setClassDictionariesMetatables</span>(klass)
+  <span class="k">local</span> dict = klass.__instanceDict
+  dict.__index = dict
+
+  <span class="k">local</span> super = klass.super
+  <span class="k">if</span> super <span class="k">then</span>
+    <span class="k">local</span> superStatic = super.static
+    <span class="nt">setmetatable</span>(dict, super.__instanceDict)
+    <span class="nt">setmetatable</span>(klass.static, { __index = <span class="k">function</span>(_,k) <span class="k">return</span> dict[k] <span class="o">or</span> superStatic[k] <span class="k">end</span> })
+  <span class="k">else</span>
+    <span class="nt">setmetatable</span>(klass.static, { __index = <span class="k">function</span>(_,k) <span class="k">return</span> dict[k] <span class="k">end</span> })
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">local</span> <span class="k">function</span> <span class="nf">_setClassMetatable</span>(klass)
+  <span class="nt">setmetatable</span>(klass, {
+    __<span class="nt">tostring</span> = <span class="k">function</span>() <span class="k">return</span> <span class="s">"class "</span> .. klass.name <span class="k">end</span>,
+    __index    = klass.static,
+    __newindex = klass.__instanceDict,
+    __call     = <span class="k">function</span>(self, ...) <span class="k">return</span> self:new(...) <span class="k">end</span>
+  })
+<span class="k">end</span>
+
+<span class="k">local</span> <span class="k">function</span> <span class="nf">_createClass</span>(name, super)
+  <span class="k">local</span> klass = { name = name, super = super, static = {}, __mixins = {}, __instanceDict={} }
+  klass.subclasses = <span class="nt">setmetatable</span>({}, {__mode = <span class="s">"k"</span>})
+
+  __setClassDictionariesMetatables(klass)
+  _setClassMetatable(klass)
+  _classes[klass] = <span class="k">true</span>
+
+  <span class="k">return</span> klass
+<span class="k">end</span>
+
+<span class="k">local</span> <span class="k">function</span> <span class="nf">_createLookupMetamethod</span>(klass, name)
+  <span class="k">return</span> <span class="k">function</span>(...)
+    <span class="k">local</span> method = klass.super[name]
+    <span class="nt">assert</span>( <span class="nt">type</span>(method)==<span class="s">'function'</span>, <span class="nt">tostring</span>(klass) .. <span class="s">" doesn't implement metamethod '"</span> .. name .. <span class="s">"'"</span> )
+    <span class="k">return</span> method(...)
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">local</span> <span class="k">function</span> <span class="nf">_setClassMetamethods</span>(klass)
+  <span class="k">for</span> _,m <span class="k">in</span> <span class="nt">ipairs</span>(klass.__metamethods) <span class="k">do</span>
+    klass[m]= _createLookupMetamethod(klass, m)
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">local</span> <span class="k">function</span> <span class="nf">_setDefaultInitializeMethod</span>(klass, super)
+  klass.initialize = <span class="k">function</span>(instance, ...)
+    <span class="k">return</span> super.initialize(instance, ...)
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">local</span> <span class="k">function</span> <span class="nf">_includeMixin</span>(klass, mixin)
+  <span class="nt">assert</span>(<span class="nt">type</span>(mixin)==<span class="s">'table'</span>, <span class="s">"mixin must be a table"</span>)
+  <span class="k">for</span> name,method <span class="k">in</span> <span class="nt">pairs</span>(mixin) <span class="k">do</span>
+    <span class="k">if</span> name ~= <span class="s">"included"</span> <span class="o">and</span> name ~= <span class="s">"static"</span> <span class="k">then</span> klass[name] = method <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="k">if</span> mixin.static <span class="k">then</span>
+    <span class="k">for</span> name,method <span class="k">in</span> <span class="nt">pairs</span>(mixin.static) <span class="k">do</span>
+      klass.static[name] = method
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="k">if</span> <span class="nt">type</span>(mixin.included)==<span class="s">"function"</span> <span class="k">then</span> mixin:included(klass) <span class="k">end</span>
+  klass.__mixins[mixin] = <span class="k">true</span>
+<span class="k">end</span>
+
+Object = _createClass(<span class="s">"Object"</span>, <span class="k">nil</span>)
+
+Object.static.__metamethods = { <span class="s">'__add'</span>, <span class="s">'__call'</span>, <span class="s">'__concat'</span>, <span class="s">'__div'</span>, <span class="s">'__le'</span>, <span class="s">'__lt'</span>, 
+                                <span class="s">'__mod'</span>, <span class="s">'__mul'</span>, <span class="s">'__pow'</span>, <span class="s">'__sub'</span>, <span class="s">'__tostring'</span>, <span class="s">'__unm'</span> }
+
+<span class="k">function</span> <span class="nf">Object.static:allocate</span>()
+  <span class="nt">assert</span>(_classes[self], <span class="s">"Make sure that you are using 'Class:allocate' instead of 'Class.allocate'"</span>)
+  <span class="k">return</span> <span class="nt">setmetatable</span>({ class = self }, self.__instanceDict)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Object.static:new</span>(...)
+  <span class="k">local</span> instance = self:allocate()
+  instance:initialize(...)
+  <span class="k">return</span> instance
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Object.static:subclass</span>(name)
+  <span class="nt">assert</span>(_classes[self], <span class="s">"Make sure that you are using 'Class:subclass' instead of 'Class.subclass'"</span>)
+  <span class="nt">assert</span>(<span class="nt">type</span>(name) == <span class="s">"string"</span>, <span class="s">"You must provide a name(string) for your class"</span>)
+
+  <span class="k">local</span> subclass = _createClass(name, self)
+  _setClassMetamethods(subclass)
+  _setDefaultInitializeMethod(subclass, self)
+  self.subclasses[subclass] = <span class="k">true</span>
+  self:subclassed(subclass)
+
+  <span class="k">return</span> subclass
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Object.static:subclassed</span>(other) <span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Object.static:include</span>( ... )
+  <span class="nt">assert</span>(_classes[self], <span class="s">"Make sure you that you are using 'Class:include' instead of 'Class.include'"</span>)
+  <span class="k">for</span> _,mixin <span class="k">in</span> <span class="nt">ipairs</span>({...}) <span class="k">do</span> _includeMixin(self, mixin) <span class="k">end</span>
+  <span class="k">return</span> self
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Object:initialize</span>() <span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Object:__<span class="nt">tostring</span></span>() <span class="k">return</span> <span class="s">"instance of "</span> .. <span class="nt">tostring</span>(self.class) <span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">class</span>(name, super, ...)
+  super = super <span class="o">or</span> Object
+  <span class="k">return</span> super:subclass(name, ...)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">instanceOf</span>(aClass, obj)
+  <span class="k">if</span> <span class="o">not</span> _classes[aClass] <span class="o">or</span> <span class="nt">type</span>(obj) ~= <span class="s">'table'</span> <span class="o">or</span> <span class="o">not</span> _classes[obj.class] <span class="k">then</span> <span class="k">return</span> <span class="k">false</span> <span class="k">end</span>
+  <span class="k">if</span> obj.class == aClass <span class="k">then</span> <span class="k">return</span> <span class="k">true</span> <span class="k">end</span>
+  <span class="k">return</span> subclassOf(aClass, obj.class)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">subclassOf</span>(other, aClass)
+  <span class="k">if</span> <span class="o">not</span> _classes[aClass] <span class="o">or</span> <span class="o">not</span> _classes[other] <span class="o">or</span> aClass.super == <span class="k">nil</span> <span class="k">then</span> <span class="k">return</span> <span class="k">false</span> <span class="k">end</span>
+  <span class="k">return</span> aClass.super == other <span class="o">or</span> subclassOf(other, aClass.super)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">includes</span>(mixin, aClass)
+  <span class="k">if</span> <span class="o">not</span> _classes[aClass] <span class="k">then</span> <span class="k">return</span> <span class="k">false</span> <span class="k">end</span>
+  <span class="k">if</span> aClass.__mixins[mixin] <span class="k">then</span> <span class="k">return</span> <span class="k">true</span> <span class="k">end</span>
+  <span class="k">return</span> includes(mixin, aClass.super)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

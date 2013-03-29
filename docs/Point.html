@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sonnet/Point.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">sonnet/Clock.lua</a>
+  <a class="source" href="Effect.html">sonnet/Effect.lua</a>
+  <a class="source" href="init.html">sonnet/init.lua</a>
+  <a class="source" href="List.html">sonnet/List.lua</a>
+  <a class="source" href="Map.html">sonnet/Map.lua</a>
+  <a class="source" href="middleclass.html">sonnet/middleclass.lua</a>
+  <a class="source" href="Point.html">sonnet/Point.lua</a>
+  <a class="source" href="Promise.html">sonnet/Promise.lua</a>
+  <a class="source" href="Scene.html">sonnet/Scene.lua</a>
+  <a class="source" href="Set.html">sonnet/Set.lua</a>
+  <a class="source" href="SparseMap.html">sonnet/SparseMap.lua</a>
+  <a class="source" href="Tween.html">sonnet/Tween.lua</a>
+  <a class="source" href="utils.html">sonnet/utils.lua</a>
+  <a class="source" href="RisingText.html">sonnet/effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">sonnet/effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              sonnet/Point.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
+
+<span class="k">local</span> Point = utils.public_class(<span class="s">'Point'</span>)
+</pre></div>
+</td>
+</tr><tr id="section-2">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-2">&#182;</a>
+  </div>
+  
+<hr/>
+<h2>Constructors</h2>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Point:initialize</span>(x,y)
+   self.x = x
+   self.y = y
+<span class="k">end</span>
+
+Point.north = Point(0, -1) ; Point.up = Point.north
+Point.south = Point(0, 1) ; Point.down = Point.south
+Point.west = Point(-1, 0) ; Point.left = Point.west
+Point.east = Point(1, 0) ; Point.right = Point.east
+
+Point.southeast = Point(1, 1)
+Point.southwest = Point(-1, 1)
+Point.northeast = Point(1, -1)
+Point.northwest = Point(-1, -1)
+
+<span class="k">function</span> <span class="nf">Point:copy</span>()
+   <span class="k">return</span> Point(self.x, self.y)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-3">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-3">&#182;</a>
+  </div>
+  
+<hr/>
+<h2>Utils</h2>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Point:ortho</span>(pt2)
+   <span class="k">return</span> self.x == pt2.x <span class="o">or</span> self.y == pt2.y
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point:toward</span>(pt2)
+   <span class="k">if</span> <span class="o">not</span> self:ortho(pt2) <span class="k">then</span> <span class="nt">error</span>(self .. <span class="s">' not in a straight line with '</span> .. pt2)
+   <span class="k">else</span>
+      <span class="k">local</span> v = pt2 - self
+      <span class="k">if</span> v.x > 0 <span class="k">then</span> v.x=1 <span class="k">end</span>
+      <span class="k">if</span> v.x < 0 <span class="k">then</span> v.x=-1 <span class="k">end</span>
+      <span class="k">if</span> v.y > 0 <span class="k">then</span> v.y=1 <span class="k">end</span>
+      <span class="k">if</span> v.y < 0 <span class="k">then</span> v.y=-1 <span class="k">end</span>
+      <span class="k">return</span> v
+   <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point:adjacent</span>(pt2, diag)
+   <span class="k">local</span> d = pt2-self
+   <span class="k">if</span> (d.x == 0 <span class="o">or</span> d.y == 0) <span class="o">and</span> (math.abs(d.x+d.y) == 1) <span class="k">then</span>
+       <span class="k">return</span> <span class="k">true</span>
+   <span class="k">elseif</span> diag <span class="k">then</span>
+       <span class="k">return</span> math.abs(d.x) == 1 <span class="o">and</span> math.abs(d.y) == 1
+   <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-4">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-4">&#182;</a>
+  </div>
+  
+<p>With one arg: returns the distance to pt2
+With two args: returns whether the distance is less than or equal to the 2nd arg</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Point:dist</span>(pt2, max)
+   <span class="nt">assert</span>(pt2)
+   <span class="k">local</span> d = (self - pt2) * (self - pt2)
+   <span class="k">if</span> max <span class="k">then</span>
+      <span class="k">return</span> (d.x+d.y) <= max*max
+   <span class="k">else</span>
+      <span class="k">return</span> math.sqrt(d.x + d.y)
+   <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<p>Length of a line from (0,0) to self</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Point:length</span>()
+   <span class="k">return</span> math.sqrt((self.x * self.x) + (self.y * self.y))
+<span class="k">end</span>
+
+Point.magnitude = Point.length
+</pre></div>
+</td>
+</tr><tr id="section-6">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-6">&#182;</a>
+  </div>
+  
+<p>Return a point with the same direction as self, but length 1</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Point:normal</span>()
+   <span class="k">return</span> self / self:length()
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point.__add</span>(pt1, pt2)
+   <span class="k">return</span> Point(pt1.x+pt2.x, pt1.y+pt2.y)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point.__sub</span>(pt1, pt2)
+   <span class="k">return</span> Point(pt1.x-pt2.x, pt1.y-pt2.y)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point.__mul</span>(pt1, pt2)
+   <span class="k">if</span> <span class="nt">type</span>(pt1) == <span class="s">'number'</span> <span class="k">then</span>
+      <span class="k">return</span> Point(pt2.x * pt1, pt2.y * pt1)
+   <span class="k">elseif</span> <span class="nt">type</span>(pt2) == <span class="s">'number'</span> <span class="k">then</span>
+      <span class="k">return</span> Point(pt1.x * pt2, pt1.y * pt2)
+   <span class="k">else</span>
+      <span class="k">return</span> Point(pt1.x*pt2.x, pt1.y*pt2.y)
+   <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point.__div</span>(pt1, pt2)
+   <span class="k">if</span> <span class="nt">type</span>(pt1) == <span class="s">'number'</span> <span class="k">then</span>
+      <span class="k">return</span> Point(pt1 * pt2.x, pt1 * pt2.x)
+   <span class="k">elseif</span> <span class="nt">type</span>(pt2) == <span class="s">'number'</span> <span class="k">then</span>
+      <span class="k">return</span> Point(pt1.x / pt2, pt1.y / pt2)
+   <span class="k">else</span>
+      <span class="k">return</span> Point(pt1.x/pt2.x, pt1.y/pt2.y)
+   <span class="k">end</span>
+<span class="k">end</span>
+
+Point.translate = Point.__add
+
+<span class="k">function</span> <span class="nf">Point:__<span class="nt">tostring</span></span>()
+   <span class="k">return</span> string.format(<span class="s">'(&#37;.2f, &#37;.2f)'</span>, self.x, self.y)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point:__call</span>()
+   <span class="k">return</span> self.x, self.y
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point.__eq</span>(pt1, pt2)
+   <span class="k">return</span> pt1.x == pt2.x <span class="o">and</span> pt1.y == pt2.y
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<p>A point is "less than" a point if each
+coord is less than the corresponding one</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Point.__lt</span>(pt1, pt2)
+   <span class="k">return</span> pt1.x < pt2.x <span class="o">and</span> pt1.y < pt2.y
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point.__le</span>(pt1, pt2)
+   <span class="k">return</span> pt1.x <= pt2.x <span class="o">and</span> pt1.y <= pt2.y
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">test</span>()
+   <span class="k">local</span> p = Point(2,3)
+   <span class="nt">assert</span>(p.x == 2 <span class="o">and</span> p.y == 3)
+   <span class="nt">assert</span>(<span class="nt">tostring</span>(p) == <span class="s">"(2.00, 3.00)"</span>)
+   p = p + Point(1,1)
+   <span class="nt">assert</span>(<span class="nt">tostring</span>(p) == <span class="s">"(3.00, 4.00)"</span>)
+   <span class="k">local</span> p2 = p:copy()
+   p2.y = p2.y-1
+   <span class="nt">assert</span>(<span class="nt">tostring</span>(p) == <span class="s">"(3.00, 4.00)"</span>)
+   <span class="nt">assert</span>(<span class="nt">tostring</span>(p2) == <span class="s">"(3.00, 3.00)"</span>)
+   <span class="nt">assert</span>(p2 + Point(1, 1) == Point(4, 4))
+
+   <span class="k">local</span> o1, o2 = Point(3, 3), Point(3, 5)
+   <span class="nt">assert</span>(o1:ortho(o2))
+   <span class="nt">assert</span>(o2-o1 == Point(0, 2))
+   <span class="nt">assert</span>(o1:toward(o2) == Point(0, 1))
+
+   <span class="k">local</span> a1, a2, a3 = Point(2, 2), Point(1, 2), Point(3, 3)
+   <span class="nt">assert</span>(a1:adjacent(a2))
+   <span class="nt">assert</span>(a2:adjacent(a1))
+   <span class="nt">assert</span>(<span class="o">not</span> a2:adjacent(a3))
+   <span class="nt">assert</span>(<span class="o">not</span> a1:adjacent(a3))
+   <span class="nt">assert</span>(<span class="o">not</span> a1:adjacent(a1))
+
+   <span class="nt">assert</span>(a2 <= a1)
+   <span class="nt">assert</span>(a1 < a3)
+   <span class="nt">assert</span>(a3 > a1)
+   <span class="nt">assert</span>(<span class="o">not</span>(a2 < a1))
+<span class="k">end</span>
+
+test() <span class="c">-- Run the tests on load, error if any fail
+</span>
+<span class="k">return</span> Point
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

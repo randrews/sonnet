@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sonnet/Tween.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">sonnet/Clock.lua</a>
+  <a class="source" href="Effect.html">sonnet/Effect.lua</a>
+  <a class="source" href="init.html">sonnet/init.lua</a>
+  <a class="source" href="List.html">sonnet/List.lua</a>
+  <a class="source" href="Map.html">sonnet/Map.lua</a>
+  <a class="source" href="middleclass.html">sonnet/middleclass.lua</a>
+  <a class="source" href="Point.html">sonnet/Point.lua</a>
+  <a class="source" href="Promise.html">sonnet/Promise.lua</a>
+  <a class="source" href="Scene.html">sonnet/Scene.lua</a>
+  <a class="source" href="Set.html">sonnet/Set.lua</a>
+  <a class="source" href="SparseMap.html">sonnet/SparseMap.lua</a>
+  <a class="source" href="Tween.html">sonnet/Tween.lua</a>
+  <a class="source" href="utils.html">sonnet/utils.lua</a>
+  <a class="source" href="RisingText.html">sonnet/effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">sonnet/effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              sonnet/Tween.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
+
+<span class="k">local</span> Tween = utils.public_class(<span class="s">'Tween'</span>)
+
+Tween.static.all = List()
+
+<span class="k">function</span> <span class="nf">Tween.static.update</span>(dt)
+   Tween.all:method_map(<span class="s">'update'</span>, dt)
+   Tween.static.all = Tween.all:method_select(<span class="s">'alive'</span>)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Tween:initialize</span>(from, to, duration)
+    self.finished = <span class="k">false</span>
+    self.value = from
+    self.from = from
+    self.to = to
+    self.diff = to - from
+    self.time = 0
+    self.duration = duration <span class="o">or</span> 1
+    Tween.all:push(self)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Tween:alive</span>() <span class="k">return</span> <span class="o">not</span> self.finished <span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Tween:update</span>(dt)
+    <span class="k">if</span> self.finished <span class="k">then</span> <span class="k">return</span> <span class="k">end</span>
+
+    self.time = self.time + dt
+    self.value = self.from + self.diff * self.time / self.duration
+
+    <span class="k">if</span> self.time >= self.duration <span class="k">then</span>
+        self.value = self.to
+        self.finished = <span class="k">true</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Tween.static.test</span>()
+    <span class="k">local</span> t = Tween(0, 10, 5)
+    <span class="nt">assert</span>(Tween.all:length() == 1)
+
+    <span class="nt">assert</span>(t.value == 0)
+    <span class="nt">assert</span>(t:alive())
+
+    Tween.update(1)
+    <span class="nt">assert</span>(t.value == 2)
+    <span class="nt">assert</span>(t:alive())
+
+    Tween.update(6)
+    <span class="nt">assert</span>(t.value == 10)
+    <span class="nt">assert</span>(<span class="o">not</span> t:alive())
+    <span class="nt">assert</span>(Tween.all:length() == 0)
+
+    Tween.update(1)
+    <span class="nt">assert</span>(t.value == 10)
+<span class="k">end</span>
+
+<span class="k">return</span> Tween
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

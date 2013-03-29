@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sonnet/Clock.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">sonnet/Clock.lua</a>
+  <a class="source" href="Effect.html">sonnet/Effect.lua</a>
+  <a class="source" href="init.html">sonnet/init.lua</a>
+  <a class="source" href="List.html">sonnet/List.lua</a>
+  <a class="source" href="Map.html">sonnet/Map.lua</a>
+  <a class="source" href="middleclass.html">sonnet/middleclass.lua</a>
+  <a class="source" href="Point.html">sonnet/Point.lua</a>
+  <a class="source" href="Promise.html">sonnet/Promise.lua</a>
+  <a class="source" href="Scene.html">sonnet/Scene.lua</a>
+  <a class="source" href="Set.html">sonnet/Set.lua</a>
+  <a class="source" href="SparseMap.html">sonnet/SparseMap.lua</a>
+  <a class="source" href="Tween.html">sonnet/Tween.lua</a>
+  <a class="source" href="utils.html">sonnet/utils.lua</a>
+  <a class="source" href="RisingText.html">sonnet/effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">sonnet/effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              sonnet/Clock.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
+
+<span class="k">local</span> Clock = utils.public_class(<span class="s">'Clock'</span>)
+
+Clock.all = List()
+
+<span class="k">function</span> <span class="nf">Clock:initialize</span>(delay, callback, ...)
+   <span class="nt">assert</span>(delay > 0, <span class="s">"Delay must be greater than 0 seconds"</span>)
+   <span class="nt">assert</span>(callback, <span class="s">"Clocks must have a callback, otherwise what's the point?"</span>)
+
+   self.delay = delay
+   self.callback = callback
+   self.elapsed = 0
+   self.args = {...}
+
+   Clock.all:push(self)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Clock.static.oneoff</span>(delay, callback, ...)
+   <span class="nt">assert</span>(delay > 0, <span class="s">"Delay must be greater than 0 seconds"</span>)
+   <span class="nt">assert</span>(callback, <span class="s">"Clocks must have a callback, otherwise what's the point?"</span>)
+
+   <span class="k">local</span> a = {...}
+   <span class="k">local</span> c
+   c = Clock(delay, <span class="k">function</span>()
+                       callback(<span class="nt">unpack</span>(a))
+                       c:stop()
+                    <span class="k">end</span>)
+
+   <span class="k">return</span> c
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Clock:update</span>(dt)
+   self.elapsed = self.elapsed + dt
+   <span class="k">if</span> self.elapsed >= self.delay <span class="k">then</span>
+      self.callback(<span class="nt">unpack</span>(self.args))
+      self.elapsed = 0
+   <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Clock:stop</span>()
+    <span class="k">if</span> <span class="o">not</span> Clock.all:remove(n) <span class="k">then</span>
+        <span class="nt">error</span>(<span class="s">"Clock not active!"</span>)
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Clock.static.update</span>(dt)
+    Clock.all:method_each(<span class="s">'update'</span>, dt)
+<span class="k">end</span>
+
+<span class="k">return</span> Clock
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

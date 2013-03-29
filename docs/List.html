@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sonnet/List.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">sonnet/Clock.lua</a>
+  <a class="source" href="Effect.html">sonnet/Effect.lua</a>
+  <a class="source" href="init.html">sonnet/init.lua</a>
+  <a class="source" href="List.html">sonnet/List.lua</a>
+  <a class="source" href="Map.html">sonnet/Map.lua</a>
+  <a class="source" href="middleclass.html">sonnet/middleclass.lua</a>
+  <a class="source" href="Point.html">sonnet/Point.lua</a>
+  <a class="source" href="Promise.html">sonnet/Promise.lua</a>
+  <a class="source" href="Scene.html">sonnet/Scene.lua</a>
+  <a class="source" href="Set.html">sonnet/Set.lua</a>
+  <a class="source" href="SparseMap.html">sonnet/SparseMap.lua</a>
+  <a class="source" href="Tween.html">sonnet/Tween.lua</a>
+  <a class="source" href="utils.html">sonnet/utils.lua</a>
+  <a class="source" href="RisingText.html">sonnet/effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">sonnet/effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              sonnet/List.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
+<span class="k">local</span> List = utils.public_class(<span class="s">'List'</span>)
+</pre></div>
+</td>
+</tr><tr id="section-2">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-2">&#182;</a>
+  </div>
+  
+<hr/>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">List:initialize</span>(items)
+    <span class="k">if</span> <span class="nt">type</span>(items) ~= <span class="s">'table'</span> <span class="k">then</span> items = {items} <span class="k">end</span>
+    self.items = items
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-3">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-3">&#182;</a>
+  </div>
+  
+<p>Add to end</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">List:push</span>(item)
+   table.insert(self.items, item)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-4">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-4">&#182;</a>
+  </div>
+  
+<p>Remove from end</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">List:pop</span>()
+   <span class="k">return</span> table.remove(self.items)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<p>Add to beginning</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">List:unshift</span>(item)
+   table.insert(self.items, 1, item)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-6">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-6">&#182;</a>
+  </div>
+  
+<p>Remove from beginning</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">List:shift</span>()
+   <span class="k">return</span> table.remove(self.items, 1)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<p>Remove first occurrence of item (using ==)</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">List:remove</span>(item)
+    <span class="k">for</span> n, c <span class="k">in</span> <span class="nt">ipairs</span>(self.items) <span class="k">do</span>
+        <span class="k">if</span> c == item <span class="k">then</span>
+            table.remove(self.items, n)
+            <span class="k">return</span> <span class="k">true</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-8">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-8">&#182;</a>
+  </div>
+  
+<hr/>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">List:push_all</span>(items)
+   <span class="k">if</span> items.class == List <span class="k">then</span> items = items.items <span class="k">end</span>
+   <span class="k">for</span> _, v <span class="k">in</span> <span class="nt">ipairs</span>(items) <span class="k">do</span> table.insert(self.items, v) <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:unshift_all</span>(items)
+   <span class="k">if</span> items.class == List <span class="k">then</span> items = items.items <span class="k">end</span>
+   <span class="k">for</span> _, v <span class="k">in</span> <span class="nt">ipairs</span>(items) <span class="k">do</span> table.insert(self.items, v, 1) <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-9">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-9">&#182;</a>
+  </div>
+  
+<hr/>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">List:length</span>()
+   <span class="k">return</span> #(self.items)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:at</span>(i, v)
+   <span class="k">if</span> v <span class="k">then</span> self.items[i] = v <span class="k">end</span>
+   <span class="k">return</span> self.items[i]
+<span class="k">end</span>
+List.__call = List.at
+
+<span class="k">function</span> <span class="nf">List:clear</span>()
+   self.items = {}
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:empty</span>()
+   <span class="k">return</span> #(self.items) == 0
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:random</span>()
+   <span class="k">if</span> self:empty() <span class="k">then</span> <span class="k">return</span> <span class="k">nil</span>
+   <span class="k">else</span> <span class="k">return</span> self.items[math.random(#self.items)] <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-10">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-10">&#182;</a>
+  </div>
+  
+<hr/>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">List:map</span>(fn, ...)
+   <span class="k">local</span> result = List()
+
+   <span class="k">for</span> _, item <span class="k">in</span> <span class="nt">ipairs</span>(self.items) <span class="k">do</span>
+      result:push( fn(item, ...) )
+   <span class="k">end</span>
+
+   <span class="k">return</span> result
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:method_map</span>(fn_name, ...)
+   <span class="k">local</span> result = List()
+
+   <span class="k">for</span> _, item <span class="k">in</span> <span class="nt">ipairs</span>(self.items) <span class="k">do</span>
+      <span class="k">local</span> fn = item[fn_name]
+      result:push( fn(item, ...) )
+   <span class="k">end</span>
+
+   <span class="k">return</span> result
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:each</span>(fn, ...)
+    <span class="k">if</span> fn <span class="k">then</span>
+        <span class="k">for</span> _, item <span class="k">in</span> <span class="nt">ipairs</span>(self.items) <span class="k">do</span>
+            fn(item, ...)
+        <span class="k">end</span>
+    <span class="k">else</span> <span class="c">-- No argument, return an iterator
+</span>        <span class="k">local</span> it = <span class="k">function</span>(t, n)
+                       <span class="k">if</span> t[n+1] <span class="k">then</span> <span class="k">return</span> n+1, t[n+1] <span class="k">end</span>
+                   <span class="k">end</span>
+
+        <span class="k">return</span> it, self.items, 0
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:method_each</span>(fn_name, ...)
+   <span class="k">for</span> _, item <span class="k">in</span> <span class="nt">ipairs</span>(self.items) <span class="k">do</span>
+      <span class="k">local</span> fn = item[fn_name]
+      fn(item, ...)
+   <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:select</span>(fn, ...)
+   <span class="k">local</span> result = List()
+
+   <span class="k">for</span> _, item <span class="k">in</span> <span class="nt">ipairs</span>(self.items) <span class="k">do</span>
+      <span class="k">if</span> fn(item, ...) <span class="k">then</span> result:push( item ) <span class="k">end</span>
+   <span class="k">end</span>
+
+   <span class="k">return</span> result
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:method_select</span>(fn_name, ...)
+   <span class="k">local</span> result = List()
+
+   <span class="k">for</span> _, item <span class="k">in</span> <span class="nt">ipairs</span>(self.items) <span class="k">do</span>
+      <span class="k">local</span> fn = item[fn_name]
+      <span class="k">if</span> fn(item, ...) <span class="k">then</span> result:push( item ) <span class="k">end</span>
+   <span class="k">end</span>
+
+   <span class="k">return</span> result
+<span class="k">end</span>
+
+<span class="k">return</span> List
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

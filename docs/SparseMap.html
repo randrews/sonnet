@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sonnet/SparseMap.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">sonnet/Clock.lua</a>
+  <a class="source" href="Effect.html">sonnet/Effect.lua</a>
+  <a class="source" href="init.html">sonnet/init.lua</a>
+  <a class="source" href="List.html">sonnet/List.lua</a>
+  <a class="source" href="Map.html">sonnet/Map.lua</a>
+  <a class="source" href="middleclass.html">sonnet/middleclass.lua</a>
+  <a class="source" href="Point.html">sonnet/Point.lua</a>
+  <a class="source" href="Promise.html">sonnet/Promise.lua</a>
+  <a class="source" href="Scene.html">sonnet/Scene.lua</a>
+  <a class="source" href="Set.html">sonnet/Set.lua</a>
+  <a class="source" href="SparseMap.html">sonnet/SparseMap.lua</a>
+  <a class="source" href="Tween.html">sonnet/Tween.lua</a>
+  <a class="source" href="utils.html">sonnet/utils.lua</a>
+  <a class="source" href="RisingText.html">sonnet/effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">sonnet/effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              sonnet/SparseMap.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
+<span class="k">local</span> Point = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Point'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
+<span class="k">local</span> Map = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Map'</span>)
+
+<span class="k">local</span> SparseMap = utils.public_class(<span class="s">'SparseMap'</span>)
+
+<span class="k">function</span> <span class="nf">SparseMap:initialize</span>(width, height)
+    self.width = width
+    self.height = height
+
+    self.cells = {} <span class="c">-- map from x+y*w to value
+</span><span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-2">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-2">&#182;</a>
+  </div>
+  
+<p>convert a point to a number to be used as an index to cells</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">SparseMap:num</span>(pt)
+    <span class="k">return</span> pt.x + pt.y * self.width
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">SparseMap:at</span>(pt, val)
+   <span class="k">if</span> self:inside(pt) <span class="k">then</span>
+       <span class="k">if</span> val~=<span class="k">nil</span> <span class="k">then</span> self.cells[self:num(pt)] = val <span class="k">end</span>
+       <span class="k">return</span> self.cells[self:num(pt)]
+   <span class="k">else</span>
+       <span class="k">return</span> <span class="k">nil</span>
+   <span class="k">end</span>
+<span class="k">end</span>
+
+SparseMap.__call = SparseMap.at
+
+<span class="k">function</span> <span class="nf">SparseMap:delete</span>(pt)
+    self.cells[self:num(pt)] = <span class="k">nil</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">SparseMap:clear</span>()
+    self.cells = {}
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">SparseMap:each</span>(start, w, h)
+   <span class="k">local</span> maxx, maxy
+
+   <span class="k">if</span> w <span class="k">then</span> maxx = start.x + w-1 <span class="k">else</span> maxx = self.width-1 <span class="k">end</span>
+   <span class="k">if</span> h <span class="k">then</span> maxy = start.y + h-1 <span class="k">else</span> maxy = self.height-1 <span class="k">end</span>
+
+   start = start <span class="o">or</span> Point(0, 0)
+   <span class="k">local</span> current = <span class="k">nil</span>
+
+   <span class="k">local</span> <span class="k">function</span> <span class="nf">valid</span>(n)
+       <span class="k">local</span> pt = Point(nself.width, math.floor(n/self.width))
+       <span class="k">return</span> (pt.x >= start.x <span class="o">and</span>
+               pt.y >= start.y <span class="o">and</span>
+               pt.x <= maxx <span class="o">and</span>
+               pt.y <= maxy)
+   <span class="k">end</span>
+
+   <span class="k">return</span> <span class="k">function</span>()
+              <span class="k">repeat</span>
+                  current = <span class="nt">next</span>(self.cells, current)
+              <span class="k">until</span> <span class="o">not</span> current <span class="o">or</span> valid(current)
+
+              <span class="k">if</span> current <span class="k">then</span>
+                  <span class="k">return</span> Point(current  self.width,
+                               math.floor(current / self.width))
+              <span class="k">else</span>
+                  <span class="k">return</span> <span class="k">nil</span>
+              <span class="k">end</span>
+          <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">SparseMap:neighbors</span>(pt, fn, diag)
+   <span class="k">local</span> all = {pt + Point(-1, 0),
+                pt + Point(1, 0),
+                pt + Point(0, -1),
+                pt + Point(0, 1)}
+
+   <span class="k">if</span> diag <span class="k">then</span>
+       table.insert(all, pt+Point.southwest)
+       table.insert(all, pt+Point.northwest)
+       table.insert(all, pt+Point.northeast)
+       table.insert(all, pt+Point.southeast)
+   <span class="k">end</span>
+
+   <span class="k">if</span> fn <span class="o">and</span> <span class="nt">type</span>(fn) ~= <span class="s">'function'</span> <span class="k">then</span>
+       <span class="k">local</span> val = fn
+       fn = <span class="k">function</span>(_, p) <span class="k">return</span> self:at(p) == val <span class="k">end</span>
+   <span class="k">end</span>
+
+   <span class="k">local</span> fit = List{}
+   <span class="k">for</span> _, p <span class="k">in</span> <span class="nt">ipairs</span>(all) <span class="k">do</span>
+       <span class="k">if</span> self:at(p) <span class="o">and</span> (<span class="o">not</span> fn <span class="o">or</span> fn(self, p)) <span class="k">then</span> fit:push(p) <span class="k">end</span>
+   <span class="k">end</span>
+   <span class="k">return</span> fit
+<span class="k">end</span>
+
+SparseMap.clamp = Map.clamp
+SparseMap.inside = Map.inside
+SparseMap.find = Map.find
+SparseMap.find_value = Map.find_value
+SparseMap.random = Map.random
+SparseMap.empty = Map.empty
+SparseMap.full = Map.full
+SparseMap.connected = Map.connected
+SparseMap.connected_value = Map.connected_value
+</pre></div>
+</td>
+</tr><tr id="section-3">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-3">&#182;</a>
+  </div>
+  
+<hr/>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">SparseMap.static.test</span>()
+</pre></div>
+</td>
+</tr><tr id="section-4">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-4">&#182;</a>
+  </div>
+  
+<p>Constructor</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="k">local</span> m = SparseMap(10, 10)
+   <span class="nt">assert</span>(m.width == 10)
+   <span class="nt">assert</span>(m:inside(Point(3,3)))
+   <span class="nt">assert</span>(<span class="o">not</span> m:inside(Point(10,10)))
+</pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<p>clear / set</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   m:clear()
+   m:at(Point(3,2),1)
+</pre></div>
+</td>
+</tr><tr id="section-6">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-6">&#182;</a>
+  </div>
+  
+<p>at</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="nt">assert</span>(m:at(Point(1,1)) == <span class="k">nil</span>)
+   <span class="nt">assert</span>(m:at(Point(3,2)) == 1)
+   <span class="nt">assert</span>(m:at(Point(10,10)) == <span class="k">nil</span>)
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<p>each</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="k">local</span> n = 0
+   <span class="k">for</span> p <span class="k">in</span> m:each() <span class="k">do</span> n = n + 1 <span class="k">end</span>
+   <span class="nt">assert</span>(n == 1)
+</pre></div>
+</td>
+</tr><tr id="section-8">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-8">&#182;</a>
+  </div>
+  
+<p>fit</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   m:clear()
+   m:at(Point(1,0),1)
+   m:at(Point(1,1),1)
+   m:at(Point(1,2),1)
+   <span class="nt">assert</span>(m:neighbors(Point(1,0)):length() == 1)
+   <span class="nt">assert</span>(m:neighbors(Point(1,1)):length() == 2)
+   <span class="nt">assert</span>(m:neighbors(Point(5,5)):length() == 0)
+
+   <span class="k">local</span> n2 = 0
+   <span class="k">for</span> p <span class="k">in</span> m:each(Point(0, 0), 5, 2) <span class="k">do</span> n2 = n2 + 1 <span class="k">end</span>
+   <span class="nt">assert</span>(n2 == 2)
+<span class="k">end</span>
+
+<span class="k">return</span> SparseMap
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

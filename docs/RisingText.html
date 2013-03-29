@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sonnet/effects/RisingText.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">sonnet/Clock.lua</a>
+  <a class="source" href="Effect.html">sonnet/Effect.lua</a>
+  <a class="source" href="init.html">sonnet/init.lua</a>
+  <a class="source" href="List.html">sonnet/List.lua</a>
+  <a class="source" href="Map.html">sonnet/Map.lua</a>
+  <a class="source" href="middleclass.html">sonnet/middleclass.lua</a>
+  <a class="source" href="Point.html">sonnet/Point.lua</a>
+  <a class="source" href="Promise.html">sonnet/Promise.lua</a>
+  <a class="source" href="Scene.html">sonnet/Scene.lua</a>
+  <a class="source" href="Set.html">sonnet/Set.lua</a>
+  <a class="source" href="SparseMap.html">sonnet/SparseMap.lua</a>
+  <a class="source" href="Tween.html">sonnet/Tween.lua</a>
+  <a class="source" href="utils.html">sonnet/utils.lua</a>
+  <a class="source" href="RisingText.html">sonnet/effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">sonnet/effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              sonnet/effects/RisingText.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> _SONNET = (...):match(<span class="s">"(&#37;w+[.])"</span>)
+<span class="k">local</span> utils = <span class="nt">require</span>(_SONNET .. <span class="s">'utils'</span>)
+<span class="k">local</span> Tween = <span class="nt">require</span>(_SONNET .. <span class="s">'Tween'</span>)
+<span class="k">local</span> Effect = <span class="nt">require</span>(_SONNET .. <span class="s">'Effect'</span>)
+
+<span class="k">local</span> RisingText = utils.public_class(<span class="s">'RisingText'</span>, Effect)
+
+<span class="k">function</span> <span class="nf">RisingText:initialize</span>(x, y, text)
+    Effect.initialize(self)
+    self.x = x
+    self.y = Tween(y, y - 40, 1)
+    self.a = Tween(255, 0, 1)
+    self.text = text
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">RisingText:active</span>()
+    <span class="k">return</span> self.y:alive()
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">RisingText:draw</span>()
+    <span class="k">local</span> r, g, b, a = love.graphics.getColor()
+
+    love.graphics.setColor(r, g, b, self.a.value)
+    love.graphics.printf(self.text,
+                         self.x, self.y.value,
+                         0, <span class="s">'center'</span>)
+    love.graphics.setColor(r, g, b, a)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">RisingText.static.demoScene</span>()
+    <span class="k">local</span> Scene = <span class="nt">require</span>(_SONNET .. <span class="s">'Scene'</span>)
+    <span class="k">local</span> Demo = Scene:subclass(<span class="s">'Demo'</span>)
+
+    <span class="k">function</span> <span class="nf">Demo:initialize</span>() self.n = 1 <span class="k">end</span>
+    <span class="k">function</span> <span class="nf">Demo:mousepressed</span>(x, y)
+        RisingText(x, y, self.n)
+        self.n = self.n + 1
+    <span class="k">end</span>
+
+    <span class="k">return</span> Demo()
+<span class="k">end</span>
+
+<span class="k">return</span> RisingText
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

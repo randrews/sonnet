@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sonnet/Scene.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">sonnet/Clock.lua</a>
+  <a class="source" href="Effect.html">sonnet/Effect.lua</a>
+  <a class="source" href="init.html">sonnet/init.lua</a>
+  <a class="source" href="List.html">sonnet/List.lua</a>
+  <a class="source" href="Map.html">sonnet/Map.lua</a>
+  <a class="source" href="middleclass.html">sonnet/middleclass.lua</a>
+  <a class="source" href="Point.html">sonnet/Point.lua</a>
+  <a class="source" href="Promise.html">sonnet/Promise.lua</a>
+  <a class="source" href="Scene.html">sonnet/Scene.lua</a>
+  <a class="source" href="Set.html">sonnet/Set.lua</a>
+  <a class="source" href="SparseMap.html">sonnet/SparseMap.lua</a>
+  <a class="source" href="Tween.html">sonnet/Tween.lua</a>
+  <a class="source" href="utils.html">sonnet/utils.lua</a>
+  <a class="source" href="RisingText.html">sonnet/effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">sonnet/effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              sonnet/Scene.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
+<span class="k">local</span> Clock = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Clock'</span>)
+<span class="k">local</span> Tween = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Tween'</span>)
+<span class="k">local</span> Effect = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Effect'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
+
+<span class="k">local</span> Scene = utils.public_class(<span class="s">'Scene'</span>)
+Scene.stack = {}
+</pre></div>
+</td>
+</tr><tr id="section-2">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-2">&#182;</a>
+  </div>
+  
+<p>The Scene stack:</p>
+
+<p>Scene manages a stack of scenes. Each scene is a set
+of love event handlers (draw, update, etc) as well as
+Tween / Clock / Messenger / Effect global lists. You
+can push and pop on the Scene stack, which is the
+standard method of changing scenes.</p>
+
+<p>Scene lifecycle:</p>
+
+<p>scene1 = MyScene()      [calls your constructor]
+scene2 = MyOtherScene() [calls your constructor]
+Scene.push(scene1)      [scene1:on<em>install]
+Scene.push(scene2)      [scene1:on</em>pause, scene2:on<em>install]
+Scene.pop()             [scene2:on</em>exit, scene1:on<em>resume, scene1:on</em>install]
+Scene.pop()             [scene1:on_exit]</p>
+
+<p>Event handler sequence:</p>
+
+<p>constructor
+on<em>install
+on</em>pause   --
+on_resume    >-- Possibly several times
+on<em>install --
+on</em>exit</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Scene.static.push</span>(scene)
+    <span class="k">local</span> stk = Scene.stack
+    <span class="k">if</span> #stk > 0 <span class="k">then</span>
+        stk[#stk]:pause()
+    <span class="k">end</span>
+
+    table.insert(stk, scene)
+    scene:install()
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Scene.static.pop</span>()
+    <span class="k">local</span> stk = Scene.stack
+    <span class="k">if</span> #stk == 0 <span class="k">then</span> <span class="nt">error</span>(<span class="s">"Scene stack underflow"</span>) <span class="k">end</span>
+    <span class="k">local</span> curr = stk[#stk]
+    curr:on_exit()
+    table.remove(stk)
+
+    <span class="k">if</span> #stk > 0 <span class="k">then</span>
+        stk[#stk]:resume()
+        stk[#stk]:install()
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-3">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-3">&#182;</a>
+  </div>
+  
+<p>Override me</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Scene:on_install</span>() <span class="k">end</span>
+<span class="k">function</span> <span class="nf">Scene:on_pause</span>() <span class="k">end</span>
+<span class="k">function</span> <span class="nf">Scene:on_resume</span>() <span class="k">end</span>
+<span class="k">function</span> <span class="nf">Scene:on_exit</span>() <span class="k">end</span>
+<span class="k">function</span> <span class="nf">Scene:update</span>(dt) <span class="k">end</span>
+<span class="k">function</span> <span class="nf">Scene:draw</span>() <span class="k">end</span>
+<span class="k">function</span> <span class="nf">Scene:keypressed</span>(key, unicode) <span class="k">end</span>
+<span class="k">function</span> <span class="nf">Scene:mousepressed</span>(x, y, button) <span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Scene:install</span>()
+    <span class="nt">assert</span>(love)
+
+    self:on_install()
+    love.update = <span class="k">function</span>(dt) self:update_with_sonnet(dt) <span class="k">end</span>
+    love.draw = <span class="k">function</span>() self:draw_with_sonnet() <span class="k">end</span>
+    love.keypressed = <span class="k">function</span>(k, u) self:keypressed(k, u) <span class="k">end</span>
+    love.mousepressed = <span class="k">function</span>(x, y, b) self:mousepressed(x, y, b) <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Scene:update_with_sonnet</span>(dt)
+    Clock.update(dt)
+    Tween.update(dt)
+    Effect.update(dt)
+    self:update(dt)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Scene:draw_with_sonnet</span>(dt)
+    self:draw()
+    Effect.draw()
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Scene:pause</span>()
+    self:on_pause()
+
+    self.clocks = Clock.all
+    self.tweens = Tween.all
+    self.effects = Effect.all
+    Clock.all = List()
+    Tween.all = List()
+    Effect.all = List()
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Scene:resume</span>()
+    <span class="k">if</span> self.clocks <span class="o">and</span> self.tweens <span class="k">then</span>
+        Clock.all = self.clocks
+        self.clocks = <span class="k">nil</span>
+
+        Tween.all = self.tweens
+        self.tweens = <span class="k">nil</span>
+
+        Effect.all = self.effects
+        self.effects = <span class="k">nil</span>
+
+        self:on_resume()
+    <span class="k">else</span>
+        <span class="nt">error</span>(<span class="s">"Scene wasn't paused"</span>)
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Scene.static.test</span>()
+    love = {}
+    <span class="k">local</span> messages = {}
+
+    <span class="k">local</span> Demo = Scene:subclass(<span class="s">'Demo'</span>)
+
+    <span class="k">function</span> <span class="nf">Demo:initialize</span>(name)
+        self.name = name
+    <span class="k">end</span>
+
+    <span class="k">function</span> <span class="nf">Demo:on_install</span>() table.insert(messages, self.name .. <span class="s">" installed"</span>) <span class="k">end</span>
+    <span class="k">function</span> <span class="nf">Demo:on_pause</span>() table.insert(messages, self.name .. <span class="s">" paused"</span>) <span class="k">end</span>
+    <span class="k">function</span> <span class="nf">Demo:on_resume</span>() table.insert(messages, self.name .. <span class="s">" resumed"</span>) <span class="k">end</span>
+    <span class="k">function</span> <span class="nf">Demo:on_exit</span>() table.insert(messages, self.name .. <span class="s">" exited"</span>) <span class="k">end</span>
+
+    d1 = Demo(<span class="s">'d1'</span>)
+    d2 = Demo(<span class="s">'d2'</span>)
+    d3 = Demo(<span class="s">'d3'</span>)
+
+    Scene.push(d1)
+    Scene.push(d2)
+    <span class="nt">assert</span>(Scene.stack[1] == d1 <span class="o">and</span> Scene.stack[2] == d2)
+    Scene.pop()
+    Scene.push(d3)
+    <span class="nt">assert</span>(Scene.stack[1] == d1 <span class="o">and</span> Scene.stack[2] == d3)
+    Scene.pop()
+    <span class="nt">assert</span>(Scene.stack[1] == d1 <span class="o">and</span> Scene.stack[2] == <span class="k">nil</span>)
+    Scene.pop()
+    <span class="nt">assert</span>(#Scene.stack == 0)
+
+    <span class="nt">assert</span>(messages[1] == <span class="s">"d1 installed"</span>)
+    <span class="nt">assert</span>(messages[2] == <span class="s">"d1 paused"</span>)
+    <span class="nt">assert</span>(messages[3] == <span class="s">"d2 installed"</span>)
+    <span class="nt">assert</span>(messages[4] == <span class="s">"d2 exited"</span>)
+    <span class="nt">assert</span>(messages[5] == <span class="s">"d1 resumed"</span>)
+    <span class="nt">assert</span>(messages[6] == <span class="s">"d1 installed"</span>)
+    <span class="nt">assert</span>(messages[7] == <span class="s">"d1 paused"</span>)
+    <span class="nt">assert</span>(messages[8] == <span class="s">"d3 installed"</span>)
+    <span class="nt">assert</span>(messages[9] == <span class="s">"d3 exited"</span>)
+    <span class="nt">assert</span>(messages[10] == <span class="s">"d1 resumed"</span>)
+    <span class="nt">assert</span>(messages[11] == <span class="s">"d1 installed"</span>)
+    <span class="nt">assert</span>(messages[12] == <span class="s">"d1 exited"</span>)
+<span class="k">end</span>
+
+<span class="k">return</span> Scene
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

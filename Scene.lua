@@ -1,3 +1,8 @@
+-- **Scenes** are an abstraction of the Love callbacks: they
+-- encapsulate drawing, update, and input functions into
+-- one object. You can define multiple scenes and install
+-- them one at a time, through the scene stack.
+
 module(..., package.seeall)
 local utils = require(_PACKAGE .. 'utils')
 local Clock = require(_PACKAGE .. 'Clock')
@@ -6,9 +11,8 @@ local Effect = require(_PACKAGE .. 'Effect')
 local List = require(_PACKAGE .. 'List')
 
 local Scene = utils.public_class('Scene')
-Scene.stack = {}
 
--- The Scene stack:
+-- ## The Scene stack:
 --
 -- Scene manages a stack of scenes. Each scene is a set
 -- of love event handlers (draw, update, etc) as well as
@@ -16,23 +20,32 @@ Scene.stack = {}
 -- can push and pop on the Scene stack, which is the
 -- standard method of changing scenes.
 --
--- Scene lifecycle:
+-- ### Scene lifecycle:
 --
--- scene1 = MyScene()      [calls your constructor]
--- scene2 = MyOtherScene() [calls your constructor]
--- Scene.push(scene1)      [scene1:on_install]
--- Scene.push(scene2)      [scene1:on_pause, scene2:on_install]
--- Scene.pop()             [scene2:on_exit, scene1:on_resume, scene1:on_install]
--- Scene.pop()             [scene1:on_exit]
+--     scene1 = MyScene()  -- calls your constructor
+--     scene2 = MyOtherScene()  -- calls your constructor
+--     Scene.push(scene1)  -- scene1:on_install
+--     Scene.push(scene2)  -- scene1:on_pause, scene2:on_install
+--     Scene.pop()
+--         -- scene2:on_exit, scene1:on_resume, scene1:on_install
+--     Scene.pop()  -- scene1:on_exit
 --
--- Event handler sequence:
+-- ### Event handler sequence:
 --
--- constructor
--- on_install
--- on_pause   --
--- on_resume    >-- Possibly several times
--- on_install --
--- on_exit
+-- - constructor
+-- - on_install
+-- - on_pause
+-- - on_resume
+-- - on_install
+-- - on_exit
+--
+-- (pause, resume, and install may be called several times, the rest only once)
+Scene.stack = {}
+
+-- ## Scene.push
+-- Push a scene on to the stack, pausing any scene that's already there.
+--
+-- - `scene` - The scene to push
 
 function Scene.static.push(scene)
     local stk = Scene.stack
@@ -43,6 +56,10 @@ function Scene.static.push(scene)
     table.insert(stk, scene)
     scene:install()
 end
+
+-- ## Scene.pop
+-- Pops the current scene off the stack, which calls its `on_exit` handler
+-- and resumes the scene below it (if any).
 
 function Scene.static.pop()
     local stk = Scene.stack
@@ -57,7 +74,8 @@ function Scene.static.pop()
     end
 end
 
--- Override me
+-- ## Event handler methods
+-- Scenes should override these
 function Scene:on_install() end
 function Scene:on_pause() end
 function Scene:on_resume() end
@@ -66,6 +84,11 @@ function Scene:update(dt) end
 function Scene:draw() end
 function Scene:keypressed(key, unicode) end
 function Scene:mousepressed(x, y, button) end
+
+-- ## Scene:install
+-- Installs this scene as the current scene (the one that
+-- is being drawn and updated, taking input, etc). You
+-- should probably not call this; use `Scene.push()` instead.
 
 function Scene:install()
     assert(love)
@@ -77,6 +100,14 @@ function Scene:install()
     love.mousepressed = function(x, y, b) self:mousepressed(x, y, b) end
 end
 
+----------------------------------------
+
+-- ## Internal stuff
+
+-- ## `update_with_sonnet`
+-- Scenes automatically call all Sonnet things (Clock, Tween, etc)
+-- with their updates.
+
 function Scene:update_with_sonnet(dt)
     Clock.update(dt)
     Tween.update(dt)
@@ -84,10 +115,17 @@ function Scene:update_with_sonnet(dt)
     self:update(dt)
 end
 
+-- ## `draw_with_sonnet`
+-- Scenes automatically draw Sonnet effects, you don't have to call Effect.draw by hand.
+
 function Scene:draw_with_sonnet(dt)
     self:draw()
     Effect.draw()
 end
+
+-- ## `pause`
+-- When paused, scenes keep a copy of all global Sonnet
+-- stuff (Effect, Tween, etc), so the next scene has a clean slate
 
 function Scene:pause()
     self:on_pause()
@@ -99,6 +137,10 @@ function Scene:pause()
     Tween.all = List()
     Effect.all = List()
 end
+
+-- ## `resume`
+-- When resumed, scenes re-install all the global Sonnet
+-- stuff (Effect, Tween, etc) that they saved
 
 function Scene:resume()
     if self.clocks and self.tweens then
@@ -116,6 +158,11 @@ function Scene:resume()
         error("Scene wasn't paused")
     end
 end
+
+----------------------------------------
+
+-- ## `test`
+-- A unit test
 
 function Scene.static.test()
     love = {}

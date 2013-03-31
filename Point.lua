@@ -76,7 +76,8 @@ Point.magnitude = Point.length
 
 -- Return a point with the same direction as self, but length 1
 function Point:normal()
-   return self / self:length()
+    if self:length() == 0 then return self
+    else return self / self:length() end
 end
 
 function Point.__add(pt1, pt2)

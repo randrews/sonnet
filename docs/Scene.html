@@ -190,6 +190,7 @@ and resumes the scene below it (if any).</p>
 <span class="k">function</span> <span class="nf">Scene:update</span>(dt) <span class="k">end</span>
 <span class="k">function</span> <span class="nf">Scene:draw</span>() <span class="k">end</span>
 <span class="k">function</span> <span class="nf">Scene:keypressed</span>(key, unicode) <span class="k">end</span>
+<span class="k">function</span> <span class="nf">Scene:keyreleased</span>(key) <span class="k">end</span>
 <span class="k">function</span> <span class="nf">Scene:mousepressed</span>(x, y, button) <span class="k">end</span>
 </pre></div>
 </td>
@@ -215,6 +216,7 @@ should probably not call this; use <code>Scene.push()</code> instead.</p>
     love.update = <span class="k">function</span>(dt) self:update_with_sonnet(dt) <span class="k">end</span>
     love.draw = <span class="k">function</span>() self:draw_with_sonnet() <span class="k">end</span>
     love.keypressed = <span class="k">function</span>(k, u) self:keypressed(k, u) <span class="k">end</span>
+    love.keyreleased = <span class="k">function</span>(k) self:keyreleased(k) <span class="k">end</span>
     love.mousepressed = <span class="k">function</span>(x, y, b) self:mousepressed(x, y, b) <span class="k">end</span>
 <span class="k">end</span>
 </pre></div>

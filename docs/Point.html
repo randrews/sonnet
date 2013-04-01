@@ -187,7 +187,8 @@ Point.magnitude = Point.length
 </td>
 <td class="code">
   <div class="highlight"><pre><span class="k">function</span> <span class="nf">Point:normal</span>()
-   <span class="k">return</span> self / self:length()
+    <span class="k">if</span> self:length() == 0 <span class="k">then</span> <span class="k">return</span> self
+    <span class="k">else</span> <span class="k">return</span> self / self:length() <span class="k">end</span>
 <span class="k">end</span>
 
 <span class="k">function</span> <span class="nf">Point.__add</span>(pt1, pt2)

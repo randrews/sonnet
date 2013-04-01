@@ -83,6 +83,7 @@ function Scene:on_exit() end
 function Scene:update(dt) end
 function Scene:draw() end
 function Scene:keypressed(key, unicode) end
+function Scene:keyreleased(key) end
 function Scene:mousepressed(x, y, button) end
 
 -- ## Scene:install
@@ -97,6 +98,7 @@ function Scene:install()
     love.update = function(dt) self:update_with_sonnet(dt) end
     love.draw = function() self:draw_with_sonnet() end
     love.keypressed = function(k, u) self:keypressed(k, u) end
+    love.keyreleased = function(k) self:keyreleased(k) end
     love.mousepressed = function(x, y, b) self:mousepressed(x, y, b) end
 end
 

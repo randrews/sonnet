@@ -39,6 +39,11 @@ function List:remove(item)
     end
 end
 
+-- Remove item at index
+function List:remove_at(index)
+    return table.remove(self.items, index)
+end
+
 ----------------------------------------
 
 function List:push_all(items)
@@ -72,8 +77,11 @@ function List:empty()
 end
 
 function List:random()
-   if self:empty() then return nil
-   else return self.items[math.random(#self.items)] end
+   if self:empty() then return nil, nil
+   else
+       local i = math.random(#self.items)
+       return self.items[i], i
+   end
 end
 
 ----------------------------------------

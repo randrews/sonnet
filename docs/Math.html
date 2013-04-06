@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Math.lua</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="locco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    <div id="jump_to">
+  Jump To &hellip;
+  <div id="jump_wrapper">
+  <div id="jump_page">
+  <a class="source" href="Clock.html">Clock.lua</a>
+  <a class="source" href="Effect.html">Effect.lua</a>
+  <a class="source" href="init.html">init.lua</a>
+  <a class="source" href="List.html">List.lua</a>
+  <a class="source" href="Map.html">Map.lua</a>
+  <a class="source" href="Math.html">Math.lua</a>
+  <a class="source" href="Messenger.html">Messenger.lua</a>
+  <a class="source" href="middleclass.html">middleclass.lua</a>
+  <a class="source" href="Point.html">Point.lua</a>
+  <a class="source" href="Promise.html">Promise.lua</a>
+  <a class="source" href="Scene.html">Scene.lua</a>
+  <a class="source" href="Set.html">Set.lua</a>
+  <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="Tween.html">Tween.lua</a>
+  <a class="source" href="utils.html">utils.lua</a>
+  <a class="source" href="RisingText.html">effects/RisingText.lua</a>
+  <a class="source" href="Sparks.html">effects/Sparks.lua</a>
+    </div>
+  </div>
+</div>
+
+    <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>
+              Math.lua
+            </h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="section-1">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-1">&#182;</a>
+  </div>
+  
+<p><strong>Math</strong> is a module of math helper functions
+useful in game development</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="nt">module</span>(..., package.seeall)
+<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
+<span class="k">local</span> Point = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Point'</span>)
+</pre></div>
+</td>
+</tr><tr id="section-2">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-2">&#182;</a>
+  </div>
+  
+<h2>halton</h2>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+</pre></div>
+</td>
+</tr><tr id="section-3">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-3">&#182;</a>
+  </div>
+  
+<p>Returns the first <code>num</code> values in the scrambled
+Halton sequence for the given base.</p>
+
+<p>The Halton sequence is a quasi-random sequence
+used to generate evenly-distributed random values.</p>
+
+<ul>
+    <li><code>base</code> is a prime number (probably 2 or 3)</li>
+    <li><code>num</code> is the number of values to return.</li>
+</ul>
+
+<p>Returns a List of <code>num</code> values between 0 and 1.</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">halton</span>(base, num)
+    <span class="k">local</span> values = List()
+</pre></div>
+</td>
+</tr><tr id="section-4">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-4">&#182;</a>
+  </div>
+  
+<p>The permutation is a table of 9 digits in random order</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>    <span class="k">local</span> digits = List{1, 2, 3, 4, 5, 6, 7, 8, 9}
+    <span class="k">local</span> permutation = {}
+    <span class="k">repeat</span>
+        <span class="k">local</span> _, i = digits:random()
+        table.insert(permutation, digits:remove_at(i))
+    <span class="k">until</span> digits:empty()
+
+    <span class="k">for</span> n = 1, num <span class="k">do</span>
+</pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<p>First generate the number...</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">local</span> result = 0
+        <span class="k">local</span> f = 1 / base
+        <span class="k">local</span> i = n
+
+        <span class="k">while</span> i > 0 <span class="k">do</span>
+            result = result + f * (i  base);
+            i = math.floor(i / base)
+            f = f / base;
+        <span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-6">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-6">&#182;</a>
+  </div>
+  
+<p>Then scramble it...</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">local</span> r = 0
+        <span class="k">for</span> n = 0, 15 <span class="k">do</span>
+            <span class="k">local</span> d = math.floor(result * (10^n)  10)
+            <span class="k">if</span> d > 0 <span class="k">then</span>
+                r = r + permutation[d] / (10^n)
+            <span class="k">end</span>
+        <span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<p>Then add it to the list</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        values:push(r)
+    <span class="k">end</span>
+
+    <span class="k">return</span> values
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-8">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-8">&#182;</a>
+  </div>
+  
+<h2>qrandom_points</h2>
+
+<p>Generate a list of quasi-random Points
+using a scrambled Halton sequence</p>
+
+<ul>
+    <li><code>num</code> is the number of Points to generate</li>
+    <li><code>width</code> is the width of the range to place them in</li>
+    <li><code>height</code> is the height of the range to place them in</li>
+</ul>
+
+<p>Returns a List of <code>num</code> Points</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">qrandom_points</span>(num, width, height)
+    <span class="k">local</span> points = List()
+    <span class="k">local</span> x = halton(2, num)
+    <span class="k">local</span> y = halton(3, num)
+
+    <span class="k">for</span> n = 1, num <span class="k">do</span>
+        <span class="k">local</span> sx = round(x:at(n) * (width+0.5))
+        <span class="k">local</span> sy = round(y:at(n) * (height+0.5))
+        points:push(Point(sx, sy))
+    <span class="k">end</span>
+
+    <span class="k">return</span> points
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-9">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-9">&#182;</a>
+  </div>
+  
+<h2>random_points</h2>
+
+<p>Generate a list of random Points
+using math.random.</p>
+
+<ul>
+    <li><code>num</code> is the number of Points to generate</li>
+    <li><code>width</code> is the width of the range to place them in</li>
+    <li><code>height</code> is the height of the range to place them in</li>
+</ul>
+
+<p>Returns a List of <code>num</code> Points</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">random_points</span>(num, width, height)
+    <span class="k">local</span> points = List()
+
+    <span class="k">for</span> n = 1, num <span class="k">do</span>
+        <span class="k">local</span> x = math.random(width)
+        <span class="k">local</span> y = math.random(height)
+        points:push(Point(x, y))
+    <span class="k">end</span>
+
+    <span class="k">return</span> points
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-10">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-10">&#182;</a>
+  </div>
+  
+<h2>round</h2>
+
+<p>If the fractional part of <code>n</code> is 0.5 or above, returns <code>ceil(n)</code>;
+otherwise, <code>floor(n)</code></p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">round</span>(n)
+    <span class="k">local</span> fpart = ((n * 10)  10) / 10
+    <span class="k">if</span> fpart >= 0.5 <span class="k">then</span> <span class="k">return</span> math.ceil(n)
+    <span class="k">else</span> <span class="k">return</span> math.floor(n) <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

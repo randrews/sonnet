@@ -18,6 +18,7 @@
   <a class="source" href="init.html">init.lua</a>
   <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
+  <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
   <a class="source" href="middleclass.html">middleclass.lua</a>
   <a class="source" href="Point.html">Point.lua</a>
@@ -170,6 +171,22 @@
     <a class="pilcrow" href="#section-8">&#182;</a>
   </div>
   
+<p>Remove item at index</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">List:remove_at</span>(index)
+    <span class="k">return</span> table.remove(self.items, index)
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-9">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-9">&#182;</a>
+  </div>
+  
 <hr/>
 
 
@@ -187,10 +204,10 @@
 <span class="k">end</span>
 </pre></div>
 </td>
-</tr><tr id="section-9">
+</tr><tr id="section-10">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-9">&#182;</a>
+    <a class="pilcrow" href="#section-10">&#182;</a>
   </div>
   
 <hr/>
@@ -218,15 +235,18 @@ List.__call = List.at
 <span class="k">end</span>
 
 <span class="k">function</span> <span class="nf">List:random</span>()
-   <span class="k">if</span> self:empty() <span class="k">then</span> <span class="k">return</span> <span class="k">nil</span>
-   <span class="k">else</span> <span class="k">return</span> self.items[math.random(#self.items)] <span class="k">end</span>
+   <span class="k">if</span> self:empty() <span class="k">then</span> <span class="k">return</span> <span class="k">nil</span>, <span class="k">nil</span>
+   <span class="k">else</span>
+       <span class="k">local</span> i = math.random(#self.items)
+       <span class="k">return</span> self.items[i], i
+   <span class="k">end</span>
 <span class="k">end</span>
 </pre></div>
 </td>
-</tr><tr id="section-10">
+</tr><tr id="section-11">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-10">&#182;</a>
+    <a class="pilcrow" href="#section-11">&#182;</a>
   </div>
   
 <hr/>

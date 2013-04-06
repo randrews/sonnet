@@ -6,8 +6,12 @@ local utils = require(_PACKAGE .. 'utils')
 local List = require(_PACKAGE .. 'List')
 local Point = require(_PACKAGE .. 'Point')
 
--- ## halton
+-- # Random numbers
+--
+-- A set of functions to handle random and quasi-random sequences
 
+-- ## halton
+--
 -- Returns the first `num` values in the scrambled
 -- Halton sequence for the given base.
 --
@@ -18,10 +22,11 @@ local Point = require(_PACKAGE .. 'Point')
 -- - `num` is the number of values to return.
 --
 -- Returns a List of `num` values between 0 and 1.
+
 function halton(base, num)
     local values = List()
 
-    -- The permutation is a table of 9 digits in random order
+    --- The permutation is a table of 9 digits in random order
     local digits = List{1, 2, 3, 4, 5, 6, 7, 8, 9}
     local permutation = {}
     repeat
@@ -30,7 +35,7 @@ function halton(base, num)
     until digits:empty()
 
     for n = 1, num do
-        -- First generate the number...
+        --- First generate the number...
         local result = 0
         local f = 1 / base
         local i = n
@@ -41,7 +46,7 @@ function halton(base, num)
             f = f / base;
         end
 
-        -- Then scramble it...
+        --- Then scramble it...
         local r = 0
         for n = 0, 15 do
             local d = math.floor(result * (10^n) % 10)
@@ -50,14 +55,14 @@ function halton(base, num)
             end
         end
 
-        -- Then add it to the list
+        --- Then add it to the list
         values:push(r)
     end
 
     return values
 end
 
--- ## qrandom_points
+-- ## qrandom points
 --
 -- Generate a list of quasi-random Points
 -- using a scrambled Halton sequence
@@ -67,6 +72,7 @@ end
 -- - `height` is the height of the range to place them in
 --
 -- Returns a List of `num` Points
+
 function qrandom_points(num, width, height)
     local points = List()
     local x = halton(2, num)
@@ -81,7 +87,7 @@ function qrandom_points(num, width, height)
     return points
 end
 
--- ## random_points
+-- ## random points
 --
 -- Generate a list of random Points
 -- using math.random.
@@ -91,6 +97,7 @@ end
 -- - `height` is the height of the range to place them in
 --
 -- Returns a List of `num` Points
+
 function random_points(num, width, height)
     local points = List()
 
@@ -107,8 +114,30 @@ end
 --
 -- If the fractional part of `n` is 0.5 or above, returns `ceil(n)`;
 -- otherwise, `floor(n)`
+
 function round(n)
     local fpart = ((n * 10) % 10) / 10
     if fpart >= 0.5 then return math.ceil(n)
     else return math.floor(n) end
+end
+
+-- # Collisions
+--
+-- This is a set of functions to determine if two shapes intersect
+
+-- ## collision point rect
+--
+-- Returns whether a point lies within a rectangle
+--
+-- - `pt` is the point
+-- - `topleft` is a Point representing the top-left corner of the rect
+-- - `size` is a Point representing the dimensions of the rect.
+--
+-- Returns true or false.
+
+function collision_point_rect(pt, topleft, size)
+    return pt.x >= topleft.x and
+        pt.x <= topleft.x+size.x and
+        pt.y >= topleft.y and
+        pt.y <= topleft.y+size.y
 end

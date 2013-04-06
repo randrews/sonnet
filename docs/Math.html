@@ -72,7 +72,9 @@ useful in game development</p>
     <a class="pilcrow" href="#section-2">&#182;</a>
   </div>
   
-<h2>halton</h2>
+<h1>Random numbers</h1>
+
+<p>A set of functions to handle random and quasi-random sequences</p>
 
 
 </td>
@@ -86,6 +88,8 @@ useful in game development</p>
     <a class="pilcrow" href="#section-3">&#182;</a>
   </div>
   
+<h2>halton</h2>
+
 <p>Returns the first <code>num</code> values in the scrambled
 Halton sequence for the given base.</p>
 
@@ -102,22 +106,12 @@ used to generate evenly-distributed random values.</p>
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">halton</span>(base, num)
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">halton</span>(base, num)
     <span class="k">local</span> values = List()
-</pre></div>
-</td>
-</tr><tr id="section-4">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-4">&#182;</a>
-  </div>
-  
-<p>The permutation is a table of 9 digits in random order</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>    <span class="k">local</span> digits = List{1, 2, 3, 4, 5, 6, 7, 8, 9}
+    <span class="c">--- The permutation is a table of 9 digits in random order
+</span>    <span class="k">local</span> digits = List{1, 2, 3, 4, 5, 6, 7, 8, 9}
     <span class="k">local</span> permutation = {}
     <span class="k">repeat</span>
         <span class="k">local</span> _, i = digits:random()
@@ -125,20 +119,8 @@ used to generate evenly-distributed random values.</p>
     <span class="k">until</span> digits:empty()
 
     <span class="k">for</span> n = 1, num <span class="k">do</span>
-</pre></div>
-</td>
-</tr><tr id="section-5">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-5">&#182;</a>
-  </div>
-  
-<p>First generate the number...</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>        <span class="k">local</span> result = 0
+        <span class="c">--- First generate the number...
+</span>        <span class="k">local</span> result = 0
         <span class="k">local</span> f = 1 / base
         <span class="k">local</span> i = n
 
@@ -147,53 +129,31 @@ used to generate evenly-distributed random values.</p>
             i = math.floor(i / base)
             f = f / base;
         <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-6">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-6">&#182;</a>
-  </div>
-  
-<p>Then scramble it...</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>        <span class="k">local</span> r = 0
+        <span class="c">--- Then scramble it...
+</span>        <span class="k">local</span> r = 0
         <span class="k">for</span> n = 0, 15 <span class="k">do</span>
             <span class="k">local</span> d = math.floor(result * (10^n)  10)
             <span class="k">if</span> d > 0 <span class="k">then</span>
                 r = r + permutation[d] / (10^n)
             <span class="k">end</span>
         <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-7">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-7">&#182;</a>
-  </div>
-  
-<p>Then add it to the list</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>        values:push(r)
+        <span class="c">--- Then add it to the list
+</span>        values:push(r)
     <span class="k">end</span>
 
     <span class="k">return</span> values
 <span class="k">end</span>
 </pre></div>
 </td>
-</tr><tr id="section-8">
+</tr><tr id="section-4">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-8">&#182;</a>
+    <a class="pilcrow" href="#section-4">&#182;</a>
   </div>
   
-<h2>qrandom_points</h2>
+<h2>qrandom points</h2>
 
 <p>Generate a list of quasi-random Points
 using a scrambled Halton sequence</p>
@@ -209,7 +169,8 @@ using a scrambled Halton sequence</p>
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">qrandom_points</span>(num, width, height)
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">qrandom_points</span>(num, width, height)
     <span class="k">local</span> points = List()
     <span class="k">local</span> x = halton(2, num)
     <span class="k">local</span> y = halton(3, num)
@@ -224,13 +185,13 @@ using a scrambled Halton sequence</p>
 <span class="k">end</span>
 </pre></div>
 </td>
-</tr><tr id="section-9">
+</tr><tr id="section-5">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-9">&#182;</a>
+    <a class="pilcrow" href="#section-5">&#182;</a>
   </div>
   
-<h2>random_points</h2>
+<h2>random points</h2>
 
 <p>Generate a list of random Points
 using math.random.</p>
@@ -246,7 +207,8 @@ using math.random.</p>
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">random_points</span>(num, width, height)
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">random_points</span>(num, width, height)
     <span class="k">local</span> points = List()
 
     <span class="k">for</span> n = 1, num <span class="k">do</span>
@@ -259,10 +221,10 @@ using math.random.</p>
 <span class="k">end</span>
 </pre></div>
 </td>
-</tr><tr id="section-10">
+</tr><tr id="section-6">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-10">&#182;</a>
+    <a class="pilcrow" href="#section-6">&#182;</a>
   </div>
   
 <h2>round</h2>
@@ -273,10 +235,57 @@ otherwise, <code>floor(n)</code></p>
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">round</span>(n)
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">round</span>(n)
     <span class="k">local</span> fpart = ((n * 10)  10) / 10
     <span class="k">if</span> fpart >= 0.5 <span class="k">then</span> <span class="k">return</span> math.ceil(n)
     <span class="k">else</span> <span class="k">return</span> math.floor(n) <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<h1>Collisions</h1>
+
+<p>This is a set of functions to determine if two shapes intersect</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+</pre></div>
+</td>
+</tr><tr id="section-8">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-8">&#182;</a>
+  </div>
+  
+<h2>collision point rect</h2>
+
+<p>Returns whether a point lies within a rectangle</p>
+
+<ul>
+    <li><code>pt</code> is the point</li>
+    <li><code>topleft</code> is a Point representing the top-left corner of the rect</li>
+    <li><code>size</code> is a Point representing the dimensions of the rect.</li>
+</ul>
+
+<p>Returns true or false.</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">collision_point_rect</span>(pt, topleft, size)
+    <span class="k">return</span> pt.x >= topleft.x <span class="o">and</span>
+        pt.x <= topleft.x+size.x <span class="o">and</span>
+        pt.y >= topleft.y <span class="o">and</span>
+        pt.y <= topleft.y+size.y
 <span class="k">end</span>
 </pre></div>
 </td>

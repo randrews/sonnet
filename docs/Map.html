@@ -196,20 +196,9 @@ Map.__call = Map.at
    <span class="k">if</span> fit:empty() <span class="k">then</span> <span class="k">return</span> <span class="k">nil</span>
    <span class="k">else</span> <span class="k">return</span> fit:random() <span class="k">end</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-3">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-3">&#182;</a>
-  </div>
-  
-<hr/>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span>
 <span class="k">function</span> <span class="nf">Map:empty</span>(pt)
    <span class="k">return</span> self:at(pt) == <span class="s">''</span>
 <span class="k">end</span>
@@ -246,10 +235,10 @@ Map.__call = Map.at
 <span class="k">function</span> <span class="nf">Map:connected</span>(start, fn, diag)
 </pre></div>
 </td>
-</tr><tr id="section-4">
+</tr><tr id="section-3">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-4">&#182;</a>
+    <a class="pilcrow" href="#section-3">&#182;</a>
   </div>
   
 <p>Turn a point into a number so we can use it a a table key</p>
@@ -286,27 +275,16 @@ Map.__call = Map.at
                           <span class="k">function</span>(map, p) <span class="k">return</span> map:at(p) == value <span class="k">end</span>,
                           diag)
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-5">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-5">&#182;</a>
-  </div>
-  
-<hr/>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span>
 <span class="k">function</span> <span class="nf">Map.static.test</span>()
 </pre></div>
 </td>
-</tr><tr id="section-6">
+</tr><tr id="section-4">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-6">&#182;</a>
+    <a class="pilcrow" href="#section-4">&#182;</a>
   </div>
   
 <p>Constructor</p>
@@ -320,10 +298,10 @@ Map.__call = Map.at
    <span class="nt">assert</span>(<span class="o">not</span> m:inside(Point(10,10)))
 </pre></div>
 </td>
-</tr><tr id="section-7">
+</tr><tr id="section-5">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-7">&#182;</a>
+    <a class="pilcrow" href="#section-5">&#182;</a>
   </div>
   
 <p>clear / set</p>
@@ -335,10 +313,10 @@ Map.__call = Map.at
    m:at(Point(3,2),1)
 </pre></div>
 </td>
-</tr><tr id="section-8">
+</tr><tr id="section-6">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-8">&#182;</a>
+    <a class="pilcrow" href="#section-6">&#182;</a>
   </div>
   
 <p>at</p>
@@ -351,10 +329,10 @@ Map.__call = Map.at
    <span class="nt">assert</span>(m:at(Point(10,10)) == <span class="k">nil</span>)
 </pre></div>
 </td>
-</tr><tr id="section-9">
+</tr><tr id="section-7">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-9">&#182;</a>
+    <a class="pilcrow" href="#section-7">&#182;</a>
   </div>
   
 <p>each</p>
@@ -367,10 +345,10 @@ Map.__call = Map.at
    <span class="nt">assert</span>(n == 100)
 </pre></div>
 </td>
-</tr><tr id="section-10">
+</tr><tr id="section-8">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-10">&#182;</a>
+    <a class="pilcrow" href="#section-8">&#182;</a>
   </div>
   
 <p>fit</p>

@@ -61,7 +61,9 @@
 <span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
 
 <span class="k">local</span> Point = utils.public_class(<span class="s">'Point'</span>)
-</pre></div>
+
+<span class="c">----------------------------------------
+</span></pre></div>
 </td>
 </tr><tr id="section-2">
 <td class="docs">
@@ -69,13 +71,13 @@
     <a class="pilcrow" href="#section-2">&#182;</a>
   </div>
   
-<hr/>
-<h2>Constructors</h2>
+<p>Constructors</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
+  <div class="highlight"><pre><span class="c">----------------------------------------
+</span>
 <span class="k">function</span> <span class="nf">Point:initialize</span>(x,y)
    self.x = x
    self.y = y
@@ -94,7 +96,9 @@ Point.northwest = Point(-1, -1)
 <span class="k">function</span> <span class="nf">Point:copy</span>()
    <span class="k">return</span> Point(self.x, self.y)
 <span class="k">end</span>
-</pre></div>
+
+<span class="c">----------------------------------------
+</span></pre></div>
 </td>
 </tr><tr id="section-3">
 <td class="docs">
@@ -102,13 +106,13 @@ Point.northwest = Point(-1, -1)
     <a class="pilcrow" href="#section-3">&#182;</a>
   </div>
   
-<hr/>
-<h2>Utils</h2>
+<p>Utils</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
+  <div class="highlight"><pre><span class="c">----------------------------------------
+</span>
 <span class="k">function</span> <span class="nf">Point:ortho</span>(pt2)
    <span class="k">return</span> self.x == pt2.x <span class="o">or</span> self.y == pt2.y
 <span class="k">end</span>

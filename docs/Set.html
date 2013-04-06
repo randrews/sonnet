@@ -74,20 +74,9 @@
 <span class="k">function</span> <span class="nf">Set:remove</span>(item)
    self.items[item] = <span class="k">nil</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-2">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-2">&#182;</a>
-  </div>
-  
-<hr/>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span>
 <span class="k">function</span> <span class="nf">Set:length</span>()
    <span class="k">local</span> n = 0
    <span class="k">for</span> k, _ <span class="k">in</span> <span class="nt">pairs</span>(self.items) <span class="k">do</span> n = n + 1 <span class="k">end</span>
@@ -101,20 +90,9 @@
 <span class="k">function</span> <span class="nf">Set:empty</span>()
    <span class="k">return</span> <span class="nt">next</span>(self.items) == <span class="k">nil</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-3">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-3">&#182;</a>
-  </div>
-  
-<hr/>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span>
 <span class="k">function</span> <span class="nf">Set:map</span>(fn, ...)
    <span class="k">local</span> result = Set()
 

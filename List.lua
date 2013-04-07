@@ -149,4 +149,29 @@ function List:method_select(fn_name, ...)
    return result
 end
 
+function List:method_filter(fn_name, ...)
+    local idx = 1
+    while idx <= #self.items do
+        local item = self.items[idx]
+        local fn = item[fn_name]
+        if fn(item, ...) then --- keep it
+            idx = idx + 1
+        else
+            table.remove(self.items, idx)
+        end
+    end
+end
+
+function List:filter(fn, ...)
+    local idx = 1
+    while idx <= #self.items do
+        local item = self.items[idx]
+        if fn(...) then --- keep it
+            idx = idx + 1
+        else
+            table.remove(self.items, idx)
+        end
+    end
+end
+
 return List

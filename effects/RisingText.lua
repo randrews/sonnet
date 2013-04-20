@@ -6,12 +6,13 @@ local Effect = require(_SONNET .. 'Effect')
 
 local RisingText = utils.submodule_class('effects', 'RisingText', Effect)
 
-function RisingText:initialize(x, y, text)
+function RisingText:initialize(x, y, text, color)
     Effect.initialize(self)
     self.x = x
     self.y = Tween(y, y - 40, 1)
     self.a = Tween(255, 0, 1)
     self.text = text
+    self.color = color or {255, 255, 255}
 end
 
 function RisingText:active()
@@ -21,7 +22,7 @@ end
 function RisingText:draw()
     local r, g, b, a = love.graphics.getColor()
 
-    love.graphics.setColor(r, g, b, self.a.value)
+    love.graphics.setColor(self.color[1], self.color[2], self.color[3], self.a.value)
     love.graphics.printf(self.text,
                          self.x, self.y.value,
                          0, 'center')

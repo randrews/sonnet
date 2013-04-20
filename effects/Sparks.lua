@@ -8,7 +8,7 @@ local Sparks = utils.submodule_class('effects', 'Sparks', Effect)
 
 Sparks.image = nil
 
-function Sparks:initialize(x, y)
+function Sparks:initialize(x, y, color1, color2)
     Effect.initialize(self)
     if not Sparks.image then
         Sparks.image = love.graphics.newImage(_SONNET .. '/images/particle.png')
@@ -17,9 +17,12 @@ function Sparks:initialize(x, y)
     self.particles = love.graphics.newParticleSystem(Sparks.image, 10)
     self.particles:setEmissionRate(100)
 
+    self.color1 = color1 or {255, 255, 0}
+    self.color2 = color2 or {255, 0, 0}
+
     self.particles:setColors(
-        math.floor(255), math.floor(255), math.floor(0), 255, -- start
-        math.floor(255), math.floor(0), math.floor(0), 0 -- end
+        math.floor(color1[1]), math.floor(color1[2]), math.floor(color1[3]), 255, -- start
+        math.floor(color2[1]), math.floor(color2[2]), math.floor(color2[3]), 0 -- end
     )
 
     self.particles:setGravity(600)

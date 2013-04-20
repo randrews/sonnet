@@ -22,6 +22,11 @@ function Promise:add(fn)
     return self
 end
 
+function Promise:method_add(obj, method_name)
+    local fn = function(...) obj[method_name](obj, ...) end
+    return self:add(fn)
+end
+
 function Promise:finish(...)
     self.arguments = {...}
     self.finished = true

@@ -23,7 +23,13 @@ function Tween:initialize(from, to, duration)
     Tween.all:push(self)
 end
 
-function Tween:alive() return not self.finished end
+function Tween:stop()
+    self.stopped = true
+end
+
+function Tween:alive()
+    return not self.finished and not self.stopped
+end
 
 function Tween:update(dt)
     if self.finished then return end

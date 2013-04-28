@@ -16,3 +16,5 @@ require(_NAME .. '.Effect')
 
 require(_NAME .. '.effects.RisingText')
 require(_NAME .. '.effects.Sparks')
+require(_NAME .. '.effects.Spray')
+require(_NAME .. '.effects.Bullet')

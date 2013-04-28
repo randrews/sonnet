@@ -12,6 +12,7 @@ function Spray:initialize(x, y, dir, lifetime, speed, color)
     color = color or {255, 255, 255}
     lifetime = lifetime or 0.5
     speed = speed or 100
+    self.dontstart = true
 
     Sparks.initialize(self, x, y, color, color)
     self.particles:setGravity(0)
@@ -19,6 +20,8 @@ function Spray:initialize(x, y, dir, lifetime, speed, color)
     self.particles:setSpeed(speed)
     self.particles:setSpread(math.pi / 4)
     self.particles:setDirection(dir)
+
+    self.particles:start()
 end
 
 function Spray.static.demoScene()

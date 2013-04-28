@@ -6,13 +6,14 @@ local Effect = require(_SONNET .. '.Effect')
 
 local Bullet = utils.submodule_class('effects', 'Bullet', Effect)
 
-function Bullet:initialize(from, to, color)
+function Bullet:initialize(from, to, speed, color)
     Effect.initialize(self)
 
     self.start = from
     self.dir = math.atan2(to.y-from.y, to.x-from.x)
     self.dist = 0
     self.max_dist = to:dist(from)
+    self.speed = speed or 1000
     self.color = color or {255, 255, 255}    
 end
 
@@ -21,7 +22,7 @@ function Bullet:active()
 end
 
 function Bullet:update(dt)
-    self.dist = self.dist + 1000 * dt    
+    self.dist = self.dist + self.speed * dt    
 end
 
 function Bullet:draw()

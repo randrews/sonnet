@@ -30,7 +30,9 @@ function Sparks:initialize(x, y, color1, color2)
     self.particles:setSpeed(200)
     self.particles:setSpread(math.pi * 2)
 
-    self.particles:start()
+    if not self.dontstart then
+        self.particles:start()
+    end
 
     self.x = x
     self.y = y

@@ -1,6 +1,7 @@
 module(..., package.seeall)
 local utils = require(_PACKAGE .. 'utils')
 local List = require(_PACKAGE .. 'List')
+local Promise = require(_PACKAGE .. 'Promise')
 
 local Effect = utils.public_class('Effect')
 Effect.all = List()
@@ -27,11 +28,29 @@ function Effect:active() return true end
 
 function Effect.static.update(dt)
     Effect.all:method_each('update', dt)
-    Effect.all = Effect.all:method_select('active')
+
+    local active_effects = List()
+    for _, e in Effect.all:each() do
+        if e:active() then
+            active_effects:push(e)
+        else
+            if e._promise then e._promise:finish() end
+        end
+    end
+
+    Effect.all = active_effects
 end
 
 function Effect.static.draw()
     Effect.all:method_each('draw')
+end
+
+function Effect:promise()
+    if not self._promise then
+        self._promise = Promise()
+    end
+
+    return self._promise
 end
 
 return Effect

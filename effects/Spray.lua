@@ -8,19 +8,17 @@ local Sparks = require(_SONNET .. '.effects.Sparks')
 
 local Spray = utils.submodule_class('effects', 'Spray', Sparks)
 
-function Spray:initialize(x, y, dir, range, color)
+function Spray:initialize(x, y, dir, lifetime, speed, color)
     color = color or {255, 255, 255}
-    range = range or 100
+    lifetime = lifetime or 0.5
+    speed = speed or 100
+
     Sparks.initialize(self, x, y, color, color)
-
     self.particles:setGravity(0)
-    self.particles:setParticleLife(range/1000, range/1000)
-    self.particles:setSpeed(1000)
-    self.particles:setSpread(math.pi / 32)
+    self.particles:setParticleLife(lifetime, lifetime)
+    self.particles:setSpeed(speed)
+    self.particles:setSpread(math.pi / 4)
     self.particles:setDirection(dir)
-
-    Clock.oneoff(0.5,
-                 function() self.particles:setEmissionRate(0) end)
 end
 
 function Spray.static.demoScene()
@@ -29,7 +27,7 @@ function Spray.static.demoScene()
     function Demo:mousepressed(x, y)
         Spray(x, y,
               math.random(360) / 180 * math.pi,
-              100)
+              0.25, 200)
     end
     return Demo()
 end

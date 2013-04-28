@@ -29,7 +29,7 @@ function Spray.static.demoScene()
     function Demo:mousepressed(x, y)
         Spray(x, y,
               math.random(360) / 180 * math.pi,
-              500)
+              100)
     end
     return Demo()
 end

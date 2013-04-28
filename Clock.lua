@@ -82,7 +82,7 @@ end
 -- Stop this clock from running.
 
 function Clock:stop()
-    if not Clock.all:remove(n) then
+    if not Clock.all:remove(self) then
         error("Clock not active!")
     end
 end

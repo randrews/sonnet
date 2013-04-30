@@ -24,8 +24,8 @@ function RisingText:draw()
 
     love.graphics.setColor(self.color[1], self.color[2], self.color[3], self.a.value)
     love.graphics.printf(self.text,
-                         self.x, self.y.value,
-                         0, 'center')
+                         self.x-500, self.y.value,
+                         1000, 'center')
     love.graphics.setColor(r, g, b, a)
 end
 

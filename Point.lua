@@ -52,6 +52,14 @@ function Point:adjacent(pt2, diag)
    end
 end
 
+function Point:angle_to(p2)
+    return math.atan2(p2.y-self.y, p2.x-self.x)
+end
+
+function Point:dot(p2)
+    return self.x*p2.x + self.y*p2.y
+end
+
 -- With one arg: returns the distance to pt2
 -- With two args: returns whether the distance is less than or equal to the 2nd arg
 function Point:dist(pt2, max)

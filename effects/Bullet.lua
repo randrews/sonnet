@@ -1,10 +1,7 @@
-module(..., package.seeall)
-local _SONNET = (...):match("(%w+)[.]")
-local utils = require(_SONNET .. '.utils')
-local Point = require(_SONNET .. '.Point')
-local Effect = require(_SONNET .. '.Effect')
+local Point = require('sonnet.Point')
+local Effect = require('sonnet.Effect')
 
-local Bullet = utils.submodule_class('effects', 'Bullet', Effect)
+local Bullet = sonnet.class('Bullet', Effect)
 
 function Bullet:initialize(from, to, speed, color)
     Effect.initialize(self)

@@ -1,6 +1,4 @@
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local List = utils.public_class('List')
+local List = sonnet.class('List')
 
 ----------------------------------------
 

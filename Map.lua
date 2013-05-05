@@ -1,9 +1,7 @@
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local Point = require(_PACKAGE .. 'Point')
-local List = require(_PACKAGE .. 'List')
+local Point = require('sonnet.Point')
+local List = require('sonnet.List')
 
-local Map = utils.public_class('Map')
+local Map = sonnet.class('Map')
 
 function Map:initialize(width, height, fill)
     fill = fill or 0

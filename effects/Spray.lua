@@ -1,12 +1,9 @@
-module(..., package.seeall)
-local _SONNET = (...):match("(%w+)[.]")
-local utils = require(_SONNET .. '.utils')
-local Tween = require(_SONNET .. '.Tween')
-local Clock = require(_SONNET .. '.Clock')
-local Effect = require(_SONNET .. '.Effect')
-local Sparks = require(_SONNET .. '.effects.Sparks')
+local Tween = require('sonnet.Tween')
+local Clock = require('sonnet.Clock')
+local Effect = require('sonnet.Effect')
+local Sparks = require('sonnet.effects.Sparks')
 
-local Spray = utils.submodule_class('effects', 'Spray', Sparks)
+local Spray = sonnet.class('Spray', Sparks)
 
 function Spray:initialize(x, y, dir, lifetime, speed, color)
     color = color or {255, 255, 255}

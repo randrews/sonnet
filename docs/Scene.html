@@ -28,8 +28,10 @@
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
+  <a class="source" href="Bullet.html">effects/Bullet.lua</a>
   <a class="source" href="RisingText.html">effects/RisingText.lua</a>
   <a class="source" href="Sparks.html">effects/Sparks.lua</a>
+  <a class="source" href="Spray.html">effects/Spray.lua</a>
     </div>
   </div>
 </div>
@@ -62,14 +64,12 @@ them one at a time, through the scene stack.</p>
 </td>
 <td class="code">
   <div class="highlight"><pre>
-<span class="nt">module</span>(..., package.seeall)
-<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
-<span class="k">local</span> Clock = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Clock'</span>)
-<span class="k">local</span> Tween = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Tween'</span>)
-<span class="k">local</span> Effect = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Effect'</span>)
-<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
+<span class="k">local</span> Clock = <span class="nt">require</span>(<span class="s">'sonnet.Clock'</span>)
+<span class="k">local</span> Tween = <span class="nt">require</span>(<span class="s">'sonnet.Tween'</span>)
+<span class="k">local</span> Effect = <span class="nt">require</span>(<span class="s">'sonnet.Effect'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
 
-<span class="k">local</span> Scene = utils.public_class(<span class="s">'Scene'</span>)
+<span class="k">local</span> Scene = sonnet.class(<span class="s">'Scene'</span>)
 </pre></div>
 </td>
 </tr><tr id="section-2">

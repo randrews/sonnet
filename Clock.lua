@@ -1,11 +1,8 @@
 -- A **Clock** takes a callback function and a delay time
 -- and calls the function at that interval.
 
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local List = require(_PACKAGE .. 'List')
-
-local Clock = utils.public_class('Clock')
+local List = require('sonnet.List')
+local Clock = sonnet.class('Clock')
 
 -- The list of all Clocks. Used by `Clock.all`
 -- to update all active Clocks every frame.

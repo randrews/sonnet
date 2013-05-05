@@ -1,7 +1,4 @@
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-
-local Set = utils.public_class('Set')
+local Set = sonnet.class('Set')
 
 function Set:initialize(...)
    self.items = {}
@@ -64,3 +61,5 @@ function Set:method_map(fn_name, ...)
 
    return result
 end
+
+return Set

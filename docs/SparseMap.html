@@ -28,8 +28,10 @@
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
+  <a class="source" href="Bullet.html">effects/Bullet.lua</a>
   <a class="source" href="RisingText.html">effects/RisingText.lua</a>
   <a class="source" href="Sparks.html">effects/Sparks.lua</a>
+  <a class="source" href="Spray.html">effects/Spray.lua</a>
     </div>
   </div>
 </div>
@@ -57,13 +59,11 @@
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
-<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
-<span class="k">local</span> Point = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Point'</span>)
-<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
-<span class="k">local</span> Map = <span class="nt">require</span>(_PACKAGE .. <span class="s">'Map'</span>)
+  <div class="highlight"><pre><span class="k">local</span> Point = <span class="nt">require</span>(<span class="s">'sonnet.Point'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+<span class="k">local</span> Map = <span class="nt">require</span>(<span class="s">'sonnet.Map'</span>)
 
-<span class="k">local</span> SparseMap = utils.public_class(<span class="s">'SparseMap'</span>)
+<span class="k">local</span> SparseMap = sonnet.class(<span class="s">'SparseMap'</span>)
 
 <span class="k">function</span> <span class="nf">SparseMap:initialize</span>(width, height)
     self.width = width

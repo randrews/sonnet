@@ -28,8 +28,10 @@
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
+  <a class="source" href="Bullet.html">effects/Bullet.lua</a>
   <a class="source" href="RisingText.html">effects/RisingText.lua</a>
   <a class="source" href="Sparks.html">effects/Sparks.lua</a>
+  <a class="source" href="Spray.html">effects/Spray.lua</a>
     </div>
   </div>
 </div>
@@ -58,21 +60,6 @@
 </td>
 <td class="code">
   <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
-<span class="k">local</span> middleclass = <span class="nt">require</span>(_PACKAGE .. <span class="s">'middleclass'</span>)
-
-__SONNET = _PACKAGE:sub(1, -2)
-
-<span class="k">function</span> <span class="nf">public_class</span>(...)
-    <span class="k">local</span> klass = middleclass.class(...)
-    _G[_SONNET][klass.name] = klass
-    <span class="k">return</span> klass
-<span class="k">end</span>
-
-<span class="k">function</span> <span class="nf">submodule_class</span>(submodule, ...)
-    <span class="k">local</span> klass = middleclass.class(...)
-    _G[_SONNET][submodule][klass.name] = klass
-    <span class="k">return</span> klass
-<span class="k">end</span>
 </pre></div>
 </td>
 </tr></tbody>

@@ -7,11 +7,9 @@
 -- that kind of message:
 --     Messenger.subscribe("player_jump", handle_jump)
 
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local List = require(_PACKAGE .. 'List')
+local List = require('sonnet.List')
 
-local Messenger = utils.public_class('Messenger')
+local Messenger = sonnet.class('Messenger')
 
 -- ## Subscription table
 -- This maps from message name to [List](List.html) of subscribers.

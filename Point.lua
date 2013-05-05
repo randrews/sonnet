@@ -1,7 +1,4 @@
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-
-local Point = utils.public_class('Point')
+local Point = sonnet.class('Point')
 
 ----------------------------------------
 -- Constructors

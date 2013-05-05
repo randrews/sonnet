@@ -28,8 +28,10 @@
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
+  <a class="source" href="Bullet.html">effects/Bullet.lua</a>
   <a class="source" href="RisingText.html">effects/RisingText.lua</a>
   <a class="source" href="Sparks.html">effects/Sparks.lua</a>
+  <a class="source" href="Spray.html">effects/Spray.lua</a>
     </div>
   </div>
 </div>
@@ -57,11 +59,10 @@
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
-<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
-<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
+  <div class="highlight"><pre><span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+<span class="k">local</span> Promise = <span class="nt">require</span>(<span class="s">'sonnet.Promise'</span>)
 
-<span class="k">local</span> Effect = utils.public_class(<span class="s">'Effect'</span>)
+<span class="k">local</span> Effect = sonnet.class(<span class="s">'Effect'</span>)
 Effect.all = List()
 </pre></div>
 </td>
@@ -108,11 +109,29 @@ finished and can be removed.</p>
 
 <span class="k">function</span> <span class="nf">Effect.static.update</span>(dt)
     Effect.all:method_each(<span class="s">'update'</span>, dt)
-    Effect.all = Effect.all:method_select(<span class="s">'active'</span>)
+
+    <span class="k">local</span> active_effects = List()
+    <span class="k">for</span> _, e <span class="k">in</span> Effect.all:each() <span class="k">do</span>
+        <span class="k">if</span> e:active() <span class="k">then</span>
+            active_effects:push(e)
+        <span class="k">else</span>
+            <span class="k">if</span> e._promise <span class="k">then</span> e._promise:finish() <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    Effect.all = active_effects
 <span class="k">end</span>
 
 <span class="k">function</span> <span class="nf">Effect.static.draw</span>()
     Effect.all:method_each(<span class="s">'draw'</span>)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Effect:promise</span>()
+    <span class="k">if</span> <span class="o">not</span> self._promise <span class="k">then</span>
+        self._promise = Promise()
+    <span class="k">end</span>
+
+    <span class="k">return</span> self._promise
 <span class="k">end</span>
 
 <span class="k">return</span> Effect

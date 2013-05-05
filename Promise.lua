@@ -1,8 +1,6 @@
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local List = require(_PACKAGE .. 'List')
+local List = require('sonnet.List')
 
-local Promise = utils.public_class('Promise')
+local Promise = sonnet.class('Promise')
 
 function Promise:initialize()
     self.finished = false

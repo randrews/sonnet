@@ -1,10 +1,8 @@
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local Point = require(_PACKAGE .. 'Point')
-local List = require(_PACKAGE .. 'List')
-local Map = require(_PACKAGE .. 'Map')
+local Point = require('sonnet.Point')
+local List = require('sonnet.List')
+local Map = require('sonnet.Map')
 
-local SparseMap = utils.public_class('SparseMap')
+local SparseMap = sonnet.class('SparseMap')
 
 function SparseMap:initialize(width, height)
     self.width = width

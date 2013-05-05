@@ -3,14 +3,12 @@
 -- one object. You can define multiple scenes and install
 -- them one at a time, through the scene stack.
 
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local Clock = require(_PACKAGE .. 'Clock')
-local Tween = require(_PACKAGE .. 'Tween')
-local Effect = require(_PACKAGE .. 'Effect')
-local List = require(_PACKAGE .. 'List')
+local Clock = require('sonnet.Clock')
+local Tween = require('sonnet.Tween')
+local Effect = require('sonnet.Effect')
+local List = require('sonnet.List')
 
-local Scene = utils.public_class('Scene')
+local Scene = sonnet.class('Scene')
 
 -- ## The Scene stack:
 --

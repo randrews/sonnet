@@ -2,9 +2,8 @@
 -- useful in game development
 
 module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local List = require(_PACKAGE .. 'List')
-local Point = require(_PACKAGE .. 'Point')
+local List = require('sonnet.List')
+local Point = require('sonnet.Point')
 
 -- # Random numbers
 --

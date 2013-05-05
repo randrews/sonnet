@@ -1,10 +1,7 @@
-module(..., package.seeall)
-local _SONNET = (...):match("(%w+)[.]")
-local utils = require(_SONNET .. '.utils')
-local Tween = require(_SONNET .. '.Tween')
-local Effect = require(_SONNET .. '.Effect')
+local Tween = require('sonnet.Tween')
+local Effect = require('sonnet.Effect')
 
-local Sparks = utils.submodule_class('effects', 'Sparks', Effect)
+local Sparks = sonnet.class('Sparks', Effect)
 
 Sparks.image = nil
 

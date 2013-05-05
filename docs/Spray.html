@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>init.lua</title>
+  <title>effects/Spray.lua</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <link rel="stylesheet" media="all" href="locco.css" />
 </head>
@@ -41,7 +41,7 @@
         <tr>
           <th class="docs">
             <h1>
-              init.lua
+              effects/Spray.lua
             </h1>
           </th>
           <th class="code">
@@ -59,29 +59,41 @@
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
+  <div class="highlight"><pre><span class="k">local</span> Tween = <span class="nt">require</span>(<span class="s">'sonnet.Tween'</span>)
+<span class="k">local</span> Clock = <span class="nt">require</span>(<span class="s">'sonnet.Clock'</span>)
+<span class="k">local</span> Effect = <span class="nt">require</span>(<span class="s">'sonnet.Effect'</span>)
+<span class="k">local</span> Sparks = <span class="nt">require</span>(<span class="s">'sonnet.effects.Sparks'</span>)
 
-<span class="nt">require</span>(<span class="s">'sonnet.middleclass'</span>)
-utils = <span class="nt">require</span>(<span class="s">'sonnet.utils'</span>)
-Math = <span class="nt">require</span>(<span class="s">'sonnet.Math'</span>)
-List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
-Set = <span class="nt">require</span>(<span class="s">'sonnet.Set'</span>)
-Point = <span class="nt">require</span>(<span class="s">'sonnet.Point'</span>)
-Map = <span class="nt">require</span>(<span class="s">'sonnet.Map'</span>)
-SparseMap = <span class="nt">require</span>(<span class="s">'sonnet.SparseMap'</span>)
-Clock = <span class="nt">require</span>(<span class="s">'sonnet.Clock'</span>)
-Tween = <span class="nt">require</span>(<span class="s">'sonnet.Tween'</span>)
-Promise = <span class="nt">require</span>(<span class="s">'sonnet.Promise'</span>)
-Messenger = <span class="nt">require</span>(<span class="s">'sonnet.Messenger'</span>)
-Scene = <span class="nt">require</span>(<span class="s">'sonnet.Scene'</span>)
-Effect = <span class="nt">require</span>(<span class="s">'sonnet.Effect'</span>)
+<span class="k">local</span> Spray = sonnet.class(<span class="s">'Spray'</span>, Sparks)
 
-effects = {}
+<span class="k">function</span> <span class="nf">Spray:initialize</span>(x, y, dir, lifetime, speed, color)
+    color = color <span class="o">or</span> {255, 255, 255}
+    lifetime = lifetime <span class="o">or</span> 0.5
+    speed = speed <span class="o">or</span> 100
+    self.dontstart = <span class="k">true</span>
 
-effects.RisingText = <span class="nt">require</span>(<span class="s">'sonnet.effects.RisingText'</span>)
-effects.Sparks = <span class="nt">require</span>(<span class="s">'sonnet.effects.Sparks'</span>)
-effects.Spray = <span class="nt">require</span>(<span class="s">'sonnet.effects.Spray'</span>)
-effects.Bullet = <span class="nt">require</span>(<span class="s">'sonnet.effects.Bullet'</span>)
+    Sparks.initialize(self, x, y, color, color)
+    self.particles:setGravity(0)
+    self.particles:setParticleLife(lifetime, lifetime)
+    self.particles:setSpeed(speed)
+    self.particles:setSpread(math.pi / 4)
+    self.particles:setDirection(dir)
+
+    self.particles:start()
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Spray.static.demoScene</span>()
+    <span class="k">local</span> Scene = <span class="nt">require</span>(_SONNET .. <span class="s">'.Scene'</span>)
+    <span class="k">local</span> Demo = Scene:subclass(<span class="s">'Demo'</span>)
+    <span class="k">function</span> <span class="nf">Demo:mousepressed</span>(x, y)
+        Spray(x, y,
+              math.random(360) / 180 * math.pi,
+              0.25, 200)
+    <span class="k">end</span>
+    <span class="k">return</span> Demo()
+<span class="k">end</span>
+
+<span class="k">return</span> Spray
 </pre></div>
 </td>
 </tr></tbody>

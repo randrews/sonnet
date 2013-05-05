@@ -28,8 +28,10 @@
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
+  <a class="source" href="Bullet.html">effects/Bullet.lua</a>
   <a class="source" href="RisingText.html">effects/RisingText.lua</a>
   <a class="source" href="Sparks.html">effects/Sparks.lua</a>
+  <a class="source" href="Spray.html">effects/Spray.lua</a>
     </div>
   </div>
 </div>
@@ -57,9 +59,7 @@
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
-<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
-<span class="k">local</span> List = utils.public_class(<span class="s">'List'</span>)
+  <div class="highlight"><pre><span class="k">local</span> List = sonnet.class(<span class="s">'List'</span>)
 
 <span class="c">----------------------------------------
 </span>
@@ -272,6 +272,31 @@ List.__call = List.at
    <span class="k">end</span>
 
    <span class="k">return</span> result
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:method_filter</span>(fn_name, ...)
+    <span class="k">local</span> idx = 1
+    <span class="k">while</span> idx <= #self.items <span class="k">do</span>
+        <span class="k">local</span> item = self.items[idx]
+        <span class="k">local</span> fn = item[fn_name]
+        <span class="k">if</span> fn(item, ...) <span class="k">then</span> <span class="c">--- keep it
+</span>            idx = idx + 1
+        <span class="k">else</span>
+            table.remove(self.items, idx)
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">List:filter</span>(fn, ...)
+    <span class="k">local</span> idx = 1
+    <span class="k">while</span> idx <= #self.items <span class="k">do</span>
+        <span class="k">local</span> item = self.items[idx]
+        <span class="k">if</span> fn(...) <span class="k">then</span> <span class="c">--- keep it
+</span>            idx = idx + 1
+        <span class="k">else</span>
+            table.remove(self.items, idx)
+        <span class="k">end</span>
+    <span class="k">end</span>
 <span class="k">end</span>
 
 <span class="k">return</span> List

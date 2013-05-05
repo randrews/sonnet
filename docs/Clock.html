@@ -28,8 +28,10 @@
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
+  <a class="source" href="Bullet.html">effects/Bullet.lua</a>
   <a class="source" href="RisingText.html">effects/RisingText.lua</a>
   <a class="source" href="Sparks.html">effects/Sparks.lua</a>
+  <a class="source" href="Spray.html">effects/Spray.lua</a>
     </div>
   </div>
 </div>
@@ -60,11 +62,8 @@ and calls the function at that interval.</p>
 </td>
 <td class="code">
   <div class="highlight"><pre>
-<span class="nt">module</span>(..., package.seeall)
-<span class="k">local</span> utils = <span class="nt">require</span>(_PACKAGE .. <span class="s">'utils'</span>)
-<span class="k">local</span> List = <span class="nt">require</span>(_PACKAGE .. <span class="s">'List'</span>)
-
-<span class="k">local</span> Clock = utils.public_class(<span class="s">'Clock'</span>)
+<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+<span class="k">local</span> Clock = sonnet.class(<span class="s">'Clock'</span>)
 </pre></div>
 </td>
 </tr><tr id="section-2">
@@ -196,7 +195,7 @@ it to call the callback.</p>
 <td class="code">
   <div class="highlight"><pre>
 <span class="k">function</span> <span class="nf">Clock:stop</span>()
-    <span class="k">if</span> <span class="o">not</span> Clock.all:remove(n) <span class="k">then</span>
+    <span class="k">if</span> <span class="o">not</span> Clock.all:remove(self) <span class="k">then</span>
         <span class="nt">error</span>(<span class="s">"Clock not active!"</span>)
     <span class="k">end</span>
 <span class="k">end</span>

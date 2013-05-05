@@ -1,10 +1,7 @@
-module(..., package.seeall)
-local _SONNET = (...):match("(%w+[.])")
-local utils = require(_SONNET .. 'utils')
-local Tween = require(_SONNET .. 'Tween')
-local Effect = require(_SONNET .. 'Effect')
+local Tween = require('sonnet.Tween')
+local Effect = require('sonnet.Effect')
 
-local RisingText = utils.submodule_class('effects', 'RisingText', Effect)
+local RisingText = sonnet.class('RisingText', Effect)
 
 function RisingText:initialize(x, y, text, color)
     Effect.initialize(self)

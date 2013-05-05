@@ -28,8 +28,10 @@
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
+  <a class="source" href="Bullet.html">effects/Bullet.lua</a>
   <a class="source" href="RisingText.html">effects/RisingText.lua</a>
   <a class="source" href="Sparks.html">effects/Sparks.lua</a>
+  <a class="source" href="Spray.html">effects/Spray.lua</a>
     </div>
   </div>
 </div>
@@ -57,17 +59,14 @@
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="nt">module</span>(..., package.seeall)
-<span class="k">local</span> _SONNET = (...):match(<span class="s">"(&#37;w+)[.]"</span>)
-<span class="k">local</span> utils = <span class="nt">require</span>(_SONNET .. <span class="s">'.utils'</span>)
-<span class="k">local</span> Tween = <span class="nt">require</span>(_SONNET .. <span class="s">'.Tween'</span>)
-<span class="k">local</span> Effect = <span class="nt">require</span>(_SONNET .. <span class="s">'.Effect'</span>)
+  <div class="highlight"><pre><span class="k">local</span> Tween = <span class="nt">require</span>(<span class="s">'sonnet.Tween'</span>)
+<span class="k">local</span> Effect = <span class="nt">require</span>(<span class="s">'sonnet.Effect'</span>)
 
-<span class="k">local</span> Sparks = utils.submodule_class(<span class="s">'effects'</span>, <span class="s">'Sparks'</span>, Effect)
+<span class="k">local</span> Sparks = sonnet.class(<span class="s">'Sparks'</span>, Effect)
 
 Sparks.image = <span class="k">nil</span>
 
-<span class="k">function</span> <span class="nf">Sparks:initialize</span>(x, y)
+<span class="k">function</span> <span class="nf">Sparks:initialize</span>(x, y, color1, color2)
     Effect.initialize(self)
     <span class="k">if</span> <span class="o">not</span> Sparks.image <span class="k">then</span>
         Sparks.image = love.graphics.newImage(_SONNET .. <span class="s">'/images/particle.png'</span>)
@@ -76,9 +75,12 @@ Sparks.image = <span class="k">nil</span>
     self.particles = love.graphics.newParticleSystem(Sparks.image, 10)
     self.particles:setEmissionRate(100)
 
+    self.color1 = color1 <span class="o">or</span> {255, 255, 0}
+    self.color2 = color2 <span class="o">or</span> {255, 0, 0}
+
     self.particles:setColors(
-        math.floor(255), math.floor(255), math.floor(0), 255, <span class="c">-- start
-</span>        math.floor(255), math.floor(0), math.floor(0), 0 <span class="c">-- end
+        math.floor(color1[1]), math.floor(color1[2]), math.floor(color1[3]), 255, <span class="c">-- start
+</span>        math.floor(color2[1]), math.floor(color2[2]), math.floor(color2[3]), 0 <span class="c">-- end
 </span>    )
 
     self.particles:setGravity(600)
@@ -86,7 +88,9 @@ Sparks.image = <span class="k">nil</span>
     self.particles:setSpeed(200)
     self.particles:setSpread(math.pi * 2)
 
-    self.particles:start()
+    <span class="k">if</span> <span class="o">not</span> self.dontstart <span class="k">then</span>
+        self.particles:start()
+    <span class="k">end</span>
 
     self.x = x
     self.y = y

@@ -1,9 +1,7 @@
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local List = require(_PACKAGE .. 'List')
-local Promise = require(_PACKAGE .. 'Promise')
+local List = require('sonnet.List')
+local Promise = require('sonnet.Promise')
 
-local Effect = utils.public_class('Effect')
+local Effect = sonnet.class('Effect')
 Effect.all = List()
 
 -- Effects

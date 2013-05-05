@@ -1,9 +1,7 @@
-module(..., package.seeall)
-local utils = require(_PACKAGE .. 'utils')
-local List = require(_PACKAGE .. 'List')
-local Promise = require(_PACKAGE .. 'Promise')
+local List = require('sonnet.List')
+local Promise = require('sonnet.Promise')
 
-local Tween = utils.public_class('Tween')
+local Tween = sonnet.class('Tween')
 
 Tween.static.all = List()
 

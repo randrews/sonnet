@@ -157,60 +157,60 @@ end
 
 function collision_circle_rect(center, radius, topleft, size)
     local rect_center = topleft + size/2
-    local diag = math.sqrt(size.x*size.x + size.y*size.y) -- Length of the rect diagonal
-    local dist = center:dist(rect_center) -- Distance the centers are apart
+    local diag = math.sqrt(size.x*size.x + size.y*size.y) --- Length of the rect diagonal
+    local dist = center:dist(rect_center) --- Distance the centers are apart
 
-    -- First, check a circle circumscribing the rect.
-    -- Obviously no collision, return false. This is to make the
-    -- most common case (you're really far away) fast.
+    --- First, check a circle circumscribing the rect.
+    --- Obviously no collision, return false. This is to make the
+    --- most common case (you're really far away) fast.
     if dist > diag/2 + radius then return false end
 
-    -- Then, let's see if we hit one of the walls of the rect:
+    --- Then, let's see if we hit one of the walls of the rect:
 
-    -- We may hit a top / btm wall if we're too close:
+    --- We may hit a top / btm wall if we're too close:
     if center.x >= rect_center.x-size.x/2 and center.x <= rect_center.x+size.x/2 then
         if math.abs(center.y-rect_center.y) > radius + size.y/2 then return false
-        else -- we hit it, move either up or down to resolve
+        else --- we hit it, move either up or down to resolve
             if center.y < rect_center.y then return true, Point(0, -1)
             else return true, Point(0, 1) end
         end
     end
 
-    -- We may hit a left / rt wall if we're too close:
+    --- We may hit a left / rt wall if we're too close:
     if center.y >= rect_center.y-size.y/2 and center.y <= rect_center.y+size.x/2 then
         if math.abs(center.x-rect_center.x) > radius + size.x/2 then return false
-        else -- we hit it, move either up or down to resolve
+        else --- we hit it, move either up or down to resolve
             if center.x < rect_center.x then return true, Point(-1, 0)
             else return true, Point(1, 0) end
         end
     end
 
-    -- We're still here, so we are diagonal-wise to the rect.
+    --- We're still here, so we are diagonal-wise to the rect.
 
     if center.x < rect_center.x and center.y < rect_center.y and
         center:dist(Point(rect_center.x-size.x/2, rect_center.y-size.y/2), diag/2+radius) then
-        -- We hit the top left corner
+        --- We hit the top left corner
         return true, (center-rect_center):normal()
     end
 
     if center.x > rect_center.x and center.y < rect_center.y and
         center:dist(Point(rect_center.x+size.x/2, rect_center.y-size.y/2), diag/2+radius) then
-        -- We hit the top right corner
+        --- We hit the top right corner
         return true, (center-rect_center):normal()
     end
 
     if center.x > rect_center.x and center.y > rect_center.y and
         center:dist(Point(rect_center.x+size.x/2, rect_center.y+size.y/2), diag/2+radius) then
-        -- We hit the bottom right corner
+        --- We hit the bottom right corner
         return true, (center-rect_center):normal()
     end
 
     if center.x < rect_center.x and center.y > rect_center.y and
         center:dist(Point(rect_center.x-size.x/2, rect_center.y+size.y/2), diag/2+radius) then
-        -- We hit the bottom left corner
+        --- We hit the bottom left corner
         return true, (center-rect_center):normal()
     end
 
-    -- And we're close but not too close, so we are fine.
+    --- And we're close but not too close, so we are fine.
     return false
 end

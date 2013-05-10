@@ -23,6 +23,7 @@
   <a class="source" href="middleclass.html">middleclass.lua</a>
   <a class="source" href="Point.html">Point.lua</a>
   <a class="source" href="Promise.html">Promise.lua</a>
+  <a class="source" href="Raycast.html">Raycast.lua</a>
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
@@ -135,6 +136,14 @@ Point.northwest = Point(-1, -1)
    <span class="k">elseif</span> diag <span class="k">then</span>
        <span class="k">return</span> math.abs(d.x) == 1 <span class="o">and</span> math.abs(d.y) == 1
    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point:angle_to</span>(p2)
+    <span class="k">return</span> math.atan2(p2.y-self.y, p2.x-self.x)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point:dot</span>(p2)
+    <span class="k">return</span> self.x*p2.x + self.y*p2.y
 <span class="k">end</span>
 </pre></div>
 </td>

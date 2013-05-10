@@ -23,6 +23,7 @@
   <a class="source" href="middleclass.html">middleclass.lua</a>
   <a class="source" href="Point.html">Point.lua</a>
   <a class="source" href="Promise.html">Promise.lua</a>
+  <a class="source" href="Raycast.html">Raycast.lua</a>
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
@@ -318,177 +319,62 @@ the direction the circle will have to move to move away from the collision.</p>
   <div class="highlight"><pre>
 <span class="k">function</span> <span class="nf">collision_circle_rect</span>(center, radius, topleft, size)
     <span class="k">local</span> rect_center = topleft + size/2
-    <span class="k">local</span> diag = math.sqrt(size.x*size.x + size.y*size.y) <span class="c">-- Length of the rect diagonal
-</span>    <span class="k">local</span> dist = center:dist(rect_center) <span class="c">-- Distance the centers are apart
-</span></pre></div>
-</td>
-</tr><tr id="section-10">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-10">&#182;</a>
-  </div>
-  
-<p>First, check a circle circumscribing the rect.
-Obviously no collision, return false. This is to make the
-most common case (you're really far away) fast.</p>
+    <span class="k">local</span> diag = math.sqrt(size.x*size.x + size.y*size.y) <span class="c">--- Length of the rect diagonal
+</span>    <span class="k">local</span> dist = center:dist(rect_center) <span class="c">--- Distance the centers are apart
+</span>
+    <span class="c">--- First, check a circle circumscribing the rect.
+</span>    <span class="c">--- Obviously no collision, return false. This is to make the
+</span>    <span class="c">--- most common case (you're really far away) fast.
+</span>    <span class="k">if</span> dist > diag/2 + radius <span class="k">then</span> <span class="k">return</span> <span class="k">false</span> <span class="k">end</span>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>    <span class="k">if</span> dist > diag/2 + radius <span class="k">then</span> <span class="k">return</span> <span class="k">false</span> <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-11">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-11">&#182;</a>
-  </div>
-  
-<p>Then, let's see if we hit one of the walls of the rect:</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
-</pre></div>
-</td>
-</tr><tr id="section-12">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-12">&#182;</a>
-  </div>
-  
-<p>We may hit a top / btm wall if we're too close:</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>    <span class="k">if</span> center.x >= rect_center.x-size.x/2 <span class="o">and</span> center.x <= rect_center.x+size.x/2 <span class="k">then</span>
+    <span class="c">--- Then, let's see if we hit one of the walls of the rect:
+</span>
+    <span class="c">--- We may hit a top / btm wall if we're too close:
+</span>    <span class="k">if</span> center.x >= rect_center.x-size.x/2 <span class="o">and</span> center.x <= rect_center.x+size.x/2 <span class="k">then</span>
         <span class="k">if</span> math.abs(center.y-rect_center.y) > radius + size.y/2 <span class="k">then</span> <span class="k">return</span> <span class="k">false</span>
-        <span class="k">else</span> <span class="c">-- we hit it, move either up or down to resolve
+        <span class="k">else</span> <span class="c">--- we hit it, move either up or down to resolve
 </span>            <span class="k">if</span> center.y < rect_center.y <span class="k">then</span> <span class="k">return</span> <span class="k">true</span>, Point(0, -1)
             <span class="k">else</span> <span class="k">return</span> <span class="k">true</span>, Point(0, 1) <span class="k">end</span>
         <span class="k">end</span>
     <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-13">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-13">&#182;</a>
-  </div>
-  
-<p>We may hit a left / rt wall if we're too close:</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>    <span class="k">if</span> center.y >= rect_center.y-size.y/2 <span class="o">and</span> center.y <= rect_center.y+size.x/2 <span class="k">then</span>
+    <span class="c">--- We may hit a left / rt wall if we're too close:
+</span>    <span class="k">if</span> center.y >= rect_center.y-size.y/2 <span class="o">and</span> center.y <= rect_center.y+size.x/2 <span class="k">then</span>
         <span class="k">if</span> math.abs(center.x-rect_center.x) > radius + size.x/2 <span class="k">then</span> <span class="k">return</span> <span class="k">false</span>
-        <span class="k">else</span> <span class="c">-- we hit it, move either up or down to resolve
+        <span class="k">else</span> <span class="c">--- we hit it, move either up or down to resolve
 </span>            <span class="k">if</span> center.x < rect_center.x <span class="k">then</span> <span class="k">return</span> <span class="k">true</span>, Point(-1, 0)
             <span class="k">else</span> <span class="k">return</span> <span class="k">true</span>, Point(1, 0) <span class="k">end</span>
         <span class="k">end</span>
     <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-14">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-14">&#182;</a>
-  </div>
-  
-<p>We're still here, so we are diagonal-wise to the rect.</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+    <span class="c">--- We're still here, so we are diagonal-wise to the rect.
+</span>
     <span class="k">if</span> center.x < rect_center.x <span class="o">and</span> center.y < rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x-size.x/2, rect_center.y-size.y/2), diag/2+radius) <span class="k">then</span>
-</pre></div>
-</td>
-</tr><tr id="section-15">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-15">&#182;</a>
-  </div>
-  
-<p>We hit the top left corner</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
+        <span class="c">--- We hit the top left corner
+</span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
     <span class="k">if</span> center.x > rect_center.x <span class="o">and</span> center.y < rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x+size.x/2, rect_center.y-size.y/2), diag/2+radius) <span class="k">then</span>
-</pre></div>
-</td>
-</tr><tr id="section-16">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-16">&#182;</a>
-  </div>
-  
-<p>We hit the top right corner</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
+        <span class="c">--- We hit the top right corner
+</span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
     <span class="k">if</span> center.x > rect_center.x <span class="o">and</span> center.y > rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x+size.x/2, rect_center.y+size.y/2), diag/2+radius) <span class="k">then</span>
-</pre></div>
-</td>
-</tr><tr id="section-17">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-17">&#182;</a>
-  </div>
-  
-<p>We hit the bottom right corner</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
+        <span class="c">--- We hit the bottom right corner
+</span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
     <span class="k">if</span> center.x < rect_center.x <span class="o">and</span> center.y > rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x-size.x/2, rect_center.y+size.y/2), diag/2+radius) <span class="k">then</span>
-</pre></div>
-</td>
-</tr><tr id="section-18">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-18">&#182;</a>
-  </div>
-  
-<p>We hit the bottom left corner</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
+        <span class="c">--- We hit the bottom left corner
+</span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-19">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-19">&#182;</a>
-  </div>
-  
-<p>And we're close but not too close, so we are fine.</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>    <span class="k">return</span> <span class="k">false</span>
+    <span class="c">--- And we're close but not too close, so we are fine.
+</span>    <span class="k">return</span> <span class="k">false</span>
 <span class="k">end</span>
 </pre></div>
 </td>

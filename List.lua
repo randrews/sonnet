@@ -7,27 +7,27 @@ function List:initialize(items)
     self.items = items
 end
 
--- Add to end
+--- Add to end
 function List:push(item)
    table.insert(self.items, item)
 end
 
--- Remove from end
+--- Remove from end
 function List:pop()
    return table.remove(self.items)
 end
 
--- Add to beginning
+--- Add to beginning
 function List:unshift(item)
    table.insert(self.items, 1, item)
 end
 
--- Remove from beginning
+--- Remove from beginning
 function List:shift()
    return table.remove(self.items, 1)
 end
 
--- Remove first occurrence of item (using ==)
+--- Remove first occurrence of item (using ==)
 function List:remove(item)
     for n, c in ipairs(self.items) do
         if c == item then
@@ -37,7 +37,7 @@ function List:remove(item)
     end
 end
 
--- Remove item at index
+--- Remove item at index
 function List:remove_at(index)
     return table.remove(self.items, index)
 end
@@ -152,7 +152,7 @@ function List:method_filter(fn_name, ...)
     while idx <= #self.items do
         local item = self.items[idx]
         local fn = item[fn_name]
-        if fn(item, ...) then --- keep it
+        if fn(item, ...) then -- keep it
             idx = idx + 1
         else
             table.remove(self.items, idx)
@@ -164,7 +164,7 @@ function List:filter(fn, ...)
     local idx = 1
     while idx <= #self.items do
         local item = self.items[idx]
-        if fn(...) then --- keep it
+        if fn(...) then -- keep it
             idx = idx + 1
         else
             table.remove(self.items, idx)

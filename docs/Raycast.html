@@ -113,7 +113,7 @@ an array of Points or an empty array, etc.</p>
 <td class="code">
   <div class="highlight"><pre>
 <span class="k">function</span> <span class="nf">line</span>(rpt, rvec, line1, line2)
-    <span class="c">--- Find the slope and y-icpt of the ray and the line
+    <span class="c">-- Find the slope and y-icpt of the ray and the line
 </span>    <span class="k">local</span> rm, rb = slope_intercept(rpt, rvec)
     <span class="k">local</span> lm, lb = slope_intercept(line1, line2-line1)
 
@@ -122,46 +122,46 @@ an array of Points or an empty array, etc.</p>
     <span class="k">local</span> ymin = math.min(line1.y, line2.y)
     <span class="k">local</span> ymax = math.max(line1.y, line2.y)
 
-    <span class="k">if</span> rm == lm <span class="k">then</span>  <span class="c">--- parallel lines
+    <span class="k">if</span> rm == lm <span class="k">then</span> <span class="c">-- parallel lines
 </span>        <span class="k">return</span> <span class="k">nil</span>
 
-    <span class="k">elseif</span> line1.x == line2.x <span class="k">then</span> <span class="c">--- vertical line special case
+    <span class="k">elseif</span> line1.x == line2.x <span class="k">then</span> <span class="c">-- vertical line special case
 </span>        <span class="k">local</span> i = Point(line1.x, rm * line1.x + rb)
 
-        <span class="c">--- Is the intersection actually on the segment?
+        <span class="c">-- Is the intersection actually on the segment?
 </span>        <span class="k">if</span> i.y >= ymin <span class="o">and</span> i.y <= ymax <span class="k">then</span>
-            <span class="c">--- Is the intersection actually being pointed at by the ray?
+            <span class="c">-- Is the intersection actually being pointed at by the ray?
 </span>            <span class="k">local</span> dx = i.x - rpt.x
             <span class="k">if</span> dx < 0 <span class="o">and</span> rvec.x < 0 <span class="o">or</span> dx > 0 <span class="o">and</span> rvec.x > 0 <span class="k">then</span>
                 <span class="k">return</span> i
             <span class="k">end</span>
         <span class="k">end</span>
 
-    <span class="k">elseif</span> math.abs(rvec.x) < 0.0001 <span class="k">then</span> <span class="c">--- vertical ray special case
-</span>        <span class="c">--- Sometimes atan2 gives us very small nonzero values, that we should really
-</span>        <span class="c">--- treat as zeros because they don't work with the general algorithm, so we round.
-</span>        <span class="c">--- The problem is that dx is effectively 0 so the "pointing at" check fails.
+    <span class="k">elseif</span> math.abs(rvec.x) < 0.0001 <span class="k">then</span> <span class="c">-- vertical ray special case
+</span>        <span class="c">-- Sometimes atan2 gives us very small nonzero values, that we should really
+</span>        <span class="c">-- treat as zeros because they don't work with the general algorithm, so we round.
+</span>        <span class="c">-- The problem is that dx is effectively 0 so the "pointing at" check fails.
 </span>        <span class="k">local</span> i = Point(rpt.x, lm * rpt.x + lb)
 
-        <span class="c">--- Is the intersection actually on the segment?
+        <span class="c">-- Is the intersection actually on the segment?
 </span>        <span class="k">if</span> i.x >= xmin <span class="o">and</span> i.x <= xmax <span class="k">then</span>
-            <span class="c">--- Is the intersection actually being pointed at by the ray?
+            <span class="c">-- Is the intersection actually being pointed at by the ray?
 </span>            <span class="k">local</span> dy = i.y - rpt.y
             <span class="k">if</span> dy < 0 <span class="o">and</span> rvec.y < 0 <span class="o">or</span> dy > 0 <span class="o">and</span> rvec.y > 0 <span class="k">then</span>
                 <span class="k">return</span> i
             <span class="k">end</span>
         <span class="k">end</span>
 
-    <span class="k">else</span> <span class="c">--- Normal intersecting lines
-</span>        <span class="c">--- okay, they intersect, but where?
-</span>        <span class="c">--- rm * x + rb == lm * x + lb
-</span>        <span class="c">--- x == (lb - rb) / (rm - lm)
+    <span class="k">else</span> <span class="c">-- Normal intersecting lines
+</span>        <span class="c">-- okay, they intersect, but where?
+</span>        <span class="c">-- rm * x + rb == lm * x + lb
+</span>        <span class="c">-- x == (lb - rb) / (rm - lm)
 </span>        <span class="k">local</span> ix = (lb - rb) / (rm - lm)
 
-        <span class="c">--- Is the intersection actually on the segment?
+        <span class="c">-- Is the intersection actually on the segment?
 </span>        <span class="k">if</span> ix >= xmin <span class="o">and</span> ix <= xmax <span class="k">then</span>
 
-            <span class="c">--- Is the intersection actually being pointed at by the ray?
+            <span class="c">-- Is the intersection actually being pointed at by the ray?
 </span>            <span class="k">local</span> dx = ix - rpt.x
             <span class="k">if</span> dx < 0 <span class="o">and</span> rvec.x < 0 <span class="o">or</span> dx > 0 <span class="o">and</span> rvec.x > 0 <span class="k">then</span>
                 <span class="k">return</span> Point(ix, rm*ix+rb)

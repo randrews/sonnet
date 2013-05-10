@@ -1,7 +1,7 @@
 local Point = sonnet.class('Point')
 
 ----------------------------------------
--- Constructors
+--- Constructors
 ----------------------------------------
 
 function Point:initialize(x,y)
@@ -24,7 +24,7 @@ function Point:copy()
 end
 
 ----------------------------------------
--- Utils
+--- Utils
 ----------------------------------------
 
 function Point:ortho(pt2)
@@ -60,8 +60,8 @@ function Point:dot(p2)
     return self.x*p2.x + self.y*p2.y
 end
 
--- With one arg: returns the distance to pt2
--- With two args: returns whether the distance is less than or equal to the 2nd arg
+--- With one arg: returns the distance to pt2
+--- With two args: returns whether the distance is less than or equal to the 2nd arg
 function Point:dist(pt2, max)
    assert(pt2)
    local d = (self - pt2) * (self - pt2)
@@ -72,14 +72,14 @@ function Point:dist(pt2, max)
    end
 end
 
--- Length of a line from (0,0) to self
+--- Length of a line from (0,0) to self
 function Point:length()
    return math.sqrt((self.x * self.x) + (self.y * self.y))
 end
 
 Point.magnitude = Point.length
 
--- Return a point with the same direction as self, but length 1
+--- Return a point with the same direction as self, but length 1
 function Point:normal()
     if self:length() == 0 then return self
     else return self / self:length() end
@@ -127,8 +127,8 @@ function Point.__eq(pt1, pt2)
    return pt1.x == pt2.x and pt1.y == pt2.y
 end
 
--- A point is "less than" a point if each
--- coord is less than the corresponding one
+--- A point is "less than" a point if each
+--- coord is less than the corresponding one
 function Point.__lt(pt1, pt2)
    return pt1.x < pt2.x and pt1.y < pt2.y
 end
@@ -166,7 +166,5 @@ function test()
    assert(a3 > a1)
    assert(not(a2 < a1))
 end
-
-test() -- Run the tests on load, error if any fail
 
 return Point

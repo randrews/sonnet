@@ -1,33 +1,33 @@
--- Broadcasts messages and lets things subscribe to messages.
---
--- A *message* is a string, with an optional set of arguments:
---     Messenger.send("player_jump", player_loc)
---
--- A *subscriber* is a function that wants to be notified about
--- that kind of message:
---     Messenger.subscribe("player_jump", handle_jump)
+--- Broadcasts messages and lets things subscribe to messages.
+---
+--- A *message* is a string, with an optional set of arguments:
+---     Messenger.send("player_jump", player_loc)
+---
+--- A *subscriber* is a function that wants to be notified about
+--- that kind of message:
+---     Messenger.subscribe("player_jump", handle_jump)
 
 local List = require('sonnet.List')
 
 local Messenger = sonnet.class('Messenger')
 
--- ## Subscription table
--- This maps from message name to [List](List.html) of subscribers.
--- The message names
--- are always strings, the subscribers are either functions
--- or tables containing {function_name, object} (if they used `method_subscribe`)
---
--- This may be swapped out and replaced when scenes are changed,
--- see [Scene](Scene.html).
+--- ## Subscription table
+--- This maps from message name to [List](List.html) of subscribers.
+--- The message names
+--- are always strings, the subscribers are either functions
+--- or tables containing {function_name, object} (if they used `method_subscribe`)
+---
+--- This may be swapped out and replaced when scenes are changed,
+--- see [Scene](Scene.html).
 Messenger.static.subscriptions = {}
 
 ----------------------------------------
 
--- ## Send
--- Send a message to all subscribers (if any)
---
--- - **message** is a string for the message type
--- - Other args are passed to all the subscribers
+--- ## Send
+--- Send a message to all subscribers (if any)
+---
+--- - **message** is a string for the message type
+--- - Other args are passed to all the subscribers
 
 function Messenger.static.send(message, ...)
     local sub_list = Messenger.subscriptions[message]
@@ -44,11 +44,11 @@ function Messenger.static.send(message, ...)
     end
 end
 
--- ## Subscribe
--- Add a function to the subscriber list for a message type
---
--- - **message** is a string for the message type
--- - **fn** is the function to handle it
+--- ## Subscribe
+--- Add a function to the subscriber list for a message type
+---
+--- - **message** is a string for the message type
+--- - **fn** is the function to handle it
 
 function Messenger.static.subscribe(message, fn)
     if not Messenger.subscriptions[message] then
@@ -59,14 +59,14 @@ function Messenger.static.subscribe(message, fn)
     subs:push(fn)
 end
 
--- ## Method Subscribe
--- Add an object method to the subscriber list for a message type
---
--- - **message** is a string for the message type
--- - **obj** is the object to invoke a method on
--- - **method_name** is the name of the method to invoke.
---
--- method_name is optional, defaults to message.
+--- ## Method Subscribe
+--- Add an object method to the subscriber list for a message type
+---
+--- - **message** is a string for the message type
+--- - **obj** is the object to invoke a method on
+--- - **method_name** is the name of the method to invoke.
+---
+--- method_name is optional, defaults to message.
 
 function Messenger.static.method_subscribe(message, obj, method_name)
     if not Messenger.subscriptions[message] then
@@ -80,8 +80,8 @@ end
 
 ----------------------------------------
 
--- ## Test
--- A unit test
+--- ## Test
+--- A unit test
 
 function Messenger.static.test()
     local a = false

@@ -112,7 +112,7 @@ used to generate evenly-distributed random values.</p>
 <span class="k">function</span> <span class="nf">halton</span>(base, num)
     <span class="k">local</span> values = List()
 
-    <span class="c">--- The permutation is a table of 9 digits in random order
+    <span class="c">-- The permutation is a table of 9 digits in random order
 </span>    <span class="k">local</span> digits = List{1, 2, 3, 4, 5, 6, 7, 8, 9}
     <span class="k">local</span> permutation = {}
     <span class="k">repeat</span>
@@ -121,7 +121,7 @@ used to generate evenly-distributed random values.</p>
     <span class="k">until</span> digits:empty()
 
     <span class="k">for</span> n = 1, num <span class="k">do</span>
-        <span class="c">--- First generate the number...
+        <span class="c">-- First generate the number...
 </span>        <span class="k">local</span> result = 0
         <span class="k">local</span> f = 1 / base
         <span class="k">local</span> i = n
@@ -132,7 +132,7 @@ used to generate evenly-distributed random values.</p>
             f = f / base;
         <span class="k">end</span>
 
-        <span class="c">--- Then scramble it...
+        <span class="c">-- Then scramble it...
 </span>        <span class="k">local</span> r = 0
         <span class="k">for</span> n = 0, 15 <span class="k">do</span>
             <span class="k">local</span> d = math.floor(result * (10^n)  10)
@@ -141,7 +141,7 @@ used to generate evenly-distributed random values.</p>
             <span class="k">end</span>
         <span class="k">end</span>
 
-        <span class="c">--- Then add it to the list
+        <span class="c">-- Then add it to the list
 </span>        values:push(r)
     <span class="k">end</span>
 
@@ -319,61 +319,61 @@ the direction the circle will have to move to move away from the collision.</p>
   <div class="highlight"><pre>
 <span class="k">function</span> <span class="nf">collision_circle_rect</span>(center, radius, topleft, size)
     <span class="k">local</span> rect_center = topleft + size/2
-    <span class="k">local</span> diag = math.sqrt(size.x*size.x + size.y*size.y) <span class="c">--- Length of the rect diagonal
-</span>    <span class="k">local</span> dist = center:dist(rect_center) <span class="c">--- Distance the centers are apart
+    <span class="k">local</span> diag = math.sqrt(size.x*size.x + size.y*size.y) <span class="c">-- Length of the rect diagonal
+</span>    <span class="k">local</span> dist = center:dist(rect_center) <span class="c">-- Distance the centers are apart
 </span>
-    <span class="c">--- First, check a circle circumscribing the rect.
-</span>    <span class="c">--- Obviously no collision, return false. This is to make the
-</span>    <span class="c">--- most common case (you're really far away) fast.
+    <span class="c">-- First, check a circle circumscribing the rect.
+</span>    <span class="c">-- Obviously no collision, return false. This is to make the
+</span>    <span class="c">-- most common case (you're really far away) fast.
 </span>    <span class="k">if</span> dist > diag/2 + radius <span class="k">then</span> <span class="k">return</span> <span class="k">false</span> <span class="k">end</span>
 
-    <span class="c">--- Then, let's see if we hit one of the walls of the rect:
+    <span class="c">-- Then, let's see if we hit one of the walls of the rect:
 </span>
-    <span class="c">--- We may hit a top / btm wall if we're too close:
+    <span class="c">-- We may hit a top / btm wall if we're too close:
 </span>    <span class="k">if</span> center.x >= rect_center.x-size.x/2 <span class="o">and</span> center.x <= rect_center.x+size.x/2 <span class="k">then</span>
         <span class="k">if</span> math.abs(center.y-rect_center.y) > radius + size.y/2 <span class="k">then</span> <span class="k">return</span> <span class="k">false</span>
-        <span class="k">else</span> <span class="c">--- we hit it, move either up or down to resolve
+        <span class="k">else</span> <span class="c">-- we hit it, move either up or down to resolve
 </span>            <span class="k">if</span> center.y < rect_center.y <span class="k">then</span> <span class="k">return</span> <span class="k">true</span>, Point(0, -1)
             <span class="k">else</span> <span class="k">return</span> <span class="k">true</span>, Point(0, 1) <span class="k">end</span>
         <span class="k">end</span>
     <span class="k">end</span>
 
-    <span class="c">--- We may hit a left / rt wall if we're too close:
+    <span class="c">-- We may hit a left / rt wall if we're too close:
 </span>    <span class="k">if</span> center.y >= rect_center.y-size.y/2 <span class="o">and</span> center.y <= rect_center.y+size.x/2 <span class="k">then</span>
         <span class="k">if</span> math.abs(center.x-rect_center.x) > radius + size.x/2 <span class="k">then</span> <span class="k">return</span> <span class="k">false</span>
-        <span class="k">else</span> <span class="c">--- we hit it, move either up or down to resolve
+        <span class="k">else</span> <span class="c">-- we hit it, move either up or down to resolve
 </span>            <span class="k">if</span> center.x < rect_center.x <span class="k">then</span> <span class="k">return</span> <span class="k">true</span>, Point(-1, 0)
             <span class="k">else</span> <span class="k">return</span> <span class="k">true</span>, Point(1, 0) <span class="k">end</span>
         <span class="k">end</span>
     <span class="k">end</span>
 
-    <span class="c">--- We're still here, so we are diagonal-wise to the rect.
+    <span class="c">-- We're still here, so we are diagonal-wise to the rect.
 </span>
     <span class="k">if</span> center.x < rect_center.x <span class="o">and</span> center.y < rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x-size.x/2, rect_center.y-size.y/2), diag/2+radius) <span class="k">then</span>
-        <span class="c">--- We hit the top left corner
+        <span class="c">-- We hit the top left corner
 </span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
     <span class="k">if</span> center.x > rect_center.x <span class="o">and</span> center.y < rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x+size.x/2, rect_center.y-size.y/2), diag/2+radius) <span class="k">then</span>
-        <span class="c">--- We hit the top right corner
+        <span class="c">-- We hit the top right corner
 </span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
     <span class="k">if</span> center.x > rect_center.x <span class="o">and</span> center.y > rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x+size.x/2, rect_center.y+size.y/2), diag/2+radius) <span class="k">then</span>
-        <span class="c">--- We hit the bottom right corner
+        <span class="c">-- We hit the bottom right corner
 </span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
     <span class="k">if</span> center.x < rect_center.x <span class="o">and</span> center.y > rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x-size.x/2, rect_center.y+size.y/2), diag/2+radius) <span class="k">then</span>
-        <span class="c">--- We hit the bottom left corner
+        <span class="c">-- We hit the bottom left corner
 </span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
-    <span class="c">--- And we're close but not too close, so we are fine.
+    <span class="c">-- And we're close but not too close, so we are fine.
 </span>    <span class="k">return</span> <span class="k">false</span>
 <span class="k">end</span>
 </pre></div>

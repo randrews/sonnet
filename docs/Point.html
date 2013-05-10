@@ -61,9 +61,7 @@
 </td>
 <td class="code">
   <div class="highlight"><pre><span class="k">local</span> Point = sonnet.class(<span class="s">'Point'</span>)
-
-<span class="c">----------------------------------------
-</span></pre></div>
+</pre></div>
 </td>
 </tr><tr id="section-2">
 <td class="docs">
@@ -71,13 +69,13 @@
     <a class="pilcrow" href="#section-2">&#182;</a>
   </div>
   
-<p>Constructors</p>
+<hr/>
+<h2>Constructors</h2>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="c">----------------------------------------
-</span>
+  <div class="highlight"><pre>
 <span class="k">function</span> <span class="nf">Point:initialize</span>(x,y)
    self.x = x
    self.y = y
@@ -96,9 +94,7 @@ Point.northwest = Point(-1, -1)
 <span class="k">function</span> <span class="nf">Point:copy</span>()
    <span class="k">return</span> Point(self.x, self.y)
 <span class="k">end</span>
-
-<span class="c">----------------------------------------
-</span></pre></div>
+</pre></div>
 </td>
 </tr><tr id="section-3">
 <td class="docs">
@@ -106,13 +102,13 @@ Point.northwest = Point(-1, -1)
     <a class="pilcrow" href="#section-3">&#182;</a>
   </div>
   
-<p>Utils</p>
+<hr/>
+<h2>Utils</h2>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="c">----------------------------------------
-</span>
+  <div class="highlight"><pre>
 <span class="k">function</span> <span class="nf">Point:ortho</span>(pt2)
    <span class="k">return</span> self.x == pt2.x <span class="o">or</span> self.y == pt2.y
 <span class="k">end</span>
@@ -297,8 +293,6 @@ coord is less than the corresponding one</p>
    <span class="nt">assert</span>(<span class="o">not</span>(a2 < a1))
 <span class="k">end</span>
 
-test() <span class="c">-- Run the tests on load, error if any fail
-</span>
 <span class="k">return</span> Point
 </pre></div>
 </td>

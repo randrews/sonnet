@@ -9,6 +9,10 @@ function Point:initialize(x,y)
    self.y = y
 end
 
+function Point.static.from_angle(a)
+    return Point(math.cos(a), -math.sin(a))
+end
+
 Point.north = Point(0, -1) ; Point.up = Point.north
 Point.south = Point(0, 1) ; Point.down = Point.south
 Point.west = Point(-1, 0) ; Point.left = Point.west

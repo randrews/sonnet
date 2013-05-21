@@ -15,10 +15,22 @@ function Tween:initialize(from, to, duration)
     self.value = from
     self.from = from
     self.to = to
-    self.diff = to - from
+    self.diff = self.to - self.from
     self.time = 0
     self.duration = duration or 1
     Tween.all:push(self)
+end
+
+function Tween.static.loop(step_duration, ...)
+    local steps = {...}
+    assert(#steps >= 2, 'A tween needs at least two steps')
+
+    local step1, step2 = table.remove(steps, 1), table.remove(steps, 1)
+    table.insert(steps, step1) ; table.insert(steps, step2)
+    local t = Tween(step1, step2, step_duration)
+
+    t.steps = steps
+    return t
 end
 
 function Tween:stop()
@@ -37,8 +49,18 @@ function Tween:update(dt)
 
     if self.time >= self.duration then
         self.value = self.to
-        self.finished = true
-        if self._promise then self._promise:finish(self) end
+
+        if self.steps then -- restart, go to the next step
+            self.from = self.to
+            self.to = table.remove(self.steps, 1)
+            table.insert(self.steps, self.to)
+            self.time = 0
+            self.diff = self.to - self.from
+
+        else -- No steps, just end
+            self.finished = true
+            if self._promise then self._promise:finish(self) end
+        end
     end
 end
 

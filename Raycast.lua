@@ -2,7 +2,7 @@
 --- against various primitives.
 
 module(..., package.seeall)
-local List = require('sonnet.List')
+require('sonnet.table')
 local Point = require('sonnet.Point')
 
 --- ## Common patterns

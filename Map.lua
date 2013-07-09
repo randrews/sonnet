@@ -1,7 +1,7 @@
 local Point = require('sonnet.Point')
-local List = require('sonnet.List')
+require('sonnet.table')
 
-local Map = sonnet.class('Map')
+local Map = class('Map')
 
 function Map:initialize(width, height, fill)
     fill = fill or 0
@@ -10,7 +10,7 @@ function Map:initialize(width, height, fill)
 
     local c = {}
     for i=1, width*height do c[i]=fill end
-    self.cells = List(c)
+    self.cells = table(c)
 end
 
 function Map.static.new_from_strings(strs)
@@ -106,7 +106,7 @@ end
 
 function Map:find(fn)
    assert(type(fn) == 'function')
-   local fit = List{}
+   local fit = table()
    for pt in self:each() do
       if fn(self, pt) then fit:push(pt) end
    end
@@ -153,7 +153,7 @@ function Map:neighbors(pt, fn, diag)
        fn = function(_, p) return self:at(p) == val end
    end
 
-   local fit = List{}
+   local fit = table()
    for _, p in ipairs(all) do
        if self:inside(p) and (not fn or fn(self, p)) then fit:push(p) end
    end
@@ -165,7 +165,7 @@ function Map:connected(start, fn, diag)
     local function num(pt) return pt.x + pt.y * self.width end
     local points = {[num(start)]=start} -- maps from x+y*width to Point
     local closed = {}
-    local open = List{start}
+    local open = table(start)
 
     while not open:empty() do
         local p = open:shift()
@@ -181,7 +181,7 @@ function Map:connected(start, fn, diag)
         closed[num(p)] = p
     end
 
-    local points_list = List()
+    local points_list = table()
     for _, p in pairs(points) do points_list:push(p) end
     return points_list
 end

@@ -1,15 +1,16 @@
 --- A **Clock** takes a callback function and a delay time
 --- and calls the function at that interval.
 
-local List = require('sonnet.List')
-local Clock = sonnet.class('Clock')
+require('sonnet.table')
+require('sonnet.middleclass')
+local Clock = class('Clock')
 
 --- The list of all Clocks. Used by `Clock.all`
 --- to update all active Clocks every frame.
 --- This may be swapped out by Scene; Clocks are
 --- local to the Scene they were declared in.
 
-Clock.all = List()
+Clock.all = table()
 
 --- ## Initialize
 ---
@@ -79,7 +80,7 @@ end
 --- Stop this clock from running.
 
 function Clock:stop()
-    if not Clock.all:remove(self) then
+    if not Clock.all:remove_item(self) then
         error("Clock not active!")
     end
 end

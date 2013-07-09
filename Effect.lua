@@ -1,8 +1,9 @@
-local List = require('sonnet.List')
+require('sonnet.table')
+require('sonnet.middleclass')
 local Promise = require('sonnet.Promise')
 
-local Effect = sonnet.class('Effect')
-Effect.all = List()
+local Effect = class('Effect')
+Effect.all = table()
 
 --- Effects
 ---
@@ -27,7 +28,7 @@ function Effect:active() return true end
 function Effect.static.update(dt)
     Effect.all:method_each('update', dt)
 
-    local active_effects = List()
+    local active_effects = table()
     for _, e in Effect.all:each() do
         if e:active() then
             active_effects:push(e)

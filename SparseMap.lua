@@ -1,8 +1,9 @@
 local Point = require('sonnet.Point')
-local List = require('sonnet.List')
+require('sonnet.table')
+require('sonnet.middleclass')
 local Map = require('sonnet.Map')
 
-local SparseMap = sonnet.class('SparseMap')
+local SparseMap = class('SparseMap')
 
 function SparseMap:initialize(width, height)
     self.width = width
@@ -84,7 +85,7 @@ function SparseMap:neighbors(pt, fn, diag)
        fn = function(_, p) return self:at(p) == val end
    end
 
-   local fit = List{}
+   local fit = table()
    for _, p in ipairs(all) do
        if self:at(p) and (not fn or fn(self, p)) then fit:push(p) end
    end

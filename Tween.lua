@@ -1,12 +1,13 @@
-local List = require('sonnet.List')
+require('sonnet.table')
+require('sonnet.middleclass')
 local Promise = require('sonnet.Promise')
 
-local Tween = sonnet.class('Tween')
+local Tween = class('Tween')
 
-Tween.static.all = List()
+Tween.static.all = table()
 
 function Tween.static.update(dt)
-   Tween.all:method_map('update', dt)
+   Tween.all:method_each('update', dt)
    Tween.static.all = Tween.all:method_select('alive')
 end
 

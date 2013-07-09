@@ -3,12 +3,13 @@
 --- one object. You can define multiple scenes and install
 --- them one at a time, through the scene stack.
 
+require('sonnet.table')
+require('sonnet.middleclass')
 local Clock = require('sonnet.Clock')
 local Tween = require('sonnet.Tween')
 local Effect = require('sonnet.Effect')
-local List = require('sonnet.List')
 
-local Scene = sonnet.class('Scene')
+local Scene = class('Scene')
 
 --- ## The Scene stack:
 ---
@@ -132,9 +133,9 @@ function Scene:pause()
     self.clocks = Clock.all
     self.tweens = Tween.all
     self.effects = Effect.all
-    Clock.all = List()
-    Tween.all = List()
-    Effect.all = List()
+    Clock.all = table()
+    Tween.all = table()
+    Effect.all = table()
 end
 
 --- ## `resume`
@@ -142,7 +143,7 @@ end
 --- stuff (Effect, Tween, etc) that they saved
 
 function Scene:resume()
-    if self.clocks and self.tweens then
+    if self.clocks and self.tweens and self.effects then
         Clock.all = self.clocks
         self.clocks = nil
 

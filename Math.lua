@@ -2,7 +2,7 @@
 --- useful in game development
 
 module(..., package.seeall)
-local List = require('sonnet.List')
+require('sonnet.table')
 local Point = require('sonnet.Point')
 
 --- # Random numbers
@@ -23,10 +23,10 @@ local Point = require('sonnet.Point')
 --- Returns a List of `num` values between 0 and 1.
 
 function halton(base, num)
-    local values = List()
+    local values = table()
 
     -- The permutation is a table of 9 digits in random order
-    local digits = List{1, 2, 3, 4, 5, 6, 7, 8, 9}
+    local digits = table(1, 2, 3, 4, 5, 6, 7, 8, 9)
     local permutation = {}
     repeat
         local _, i = digits:random()
@@ -70,10 +70,10 @@ end
 --- - `width` is the width of the range to place them in
 --- - `height` is the height of the range to place them in
 ---
---- Returns a List of `num` Points
+--- Returns a list of `num` Points
 
 function qrandom_points(num, width, height)
-    local points = List()
+    local points = table()
     local x = halton(2, num)
     local y = halton(3, num)
 
@@ -95,10 +95,10 @@ end
 --- - `width` is the width of the range to place them in
 --- - `height` is the height of the range to place them in
 ---
---- Returns a List of `num` Points
+--- Returns a list of `num` Points
 
 function random_points(num, width, height)
-    local points = List()
+    local points = table()
 
     for n = 1, num do
         local x = math.random(width)

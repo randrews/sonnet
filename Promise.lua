@@ -1,10 +1,11 @@
-local List = require('sonnet.List')
+require('sonnet.table')
+require('sonnet.middleclass')
 
-local Promise = sonnet.class('Promise')
+local Promise = class('Promise')
 
 function Promise:initialize()
     self.finished = false
-    self.functions = List()
+    self.functions = table()
     self.arguments = nil
 end
 

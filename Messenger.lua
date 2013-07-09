@@ -7,9 +7,10 @@
 --- that kind of message:
 ---     Messenger.subscribe("player_jump", handle_jump)
 
-local List = require('sonnet.List')
+require('sonnet.table')
+require('sonnet.middleclass')
 
-local Messenger = sonnet.class('Messenger')
+local Messenger = class('Messenger')
 
 --- ## Subscription table
 --- This maps from message name to [List](List.html) of subscribers.
@@ -52,7 +53,7 @@ end
 
 function Messenger.static.subscribe(message, fn)
     if not Messenger.subscriptions[message] then
-        Messenger.subscriptions[message] = List()
+        Messenger.subscriptions[message] = table()
     end
 
     local subs = Messenger.subscriptions[message]
@@ -70,7 +71,7 @@ end
 
 function Messenger.static.method_subscribe(message, obj, method_name)
     if not Messenger.subscriptions[message] then
-        Messenger.subscriptions[message] = List()
+        Messenger.subscriptions[message] = table()
     end
 
     local subs = Messenger.subscriptions[message]

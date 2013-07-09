@@ -1,4 +1,5 @@
-local Set = sonnet.class('Set')
+require('sonnet.middleclass')
+local Set = class('Set')
 
 function Set:initialize(...)
    self.items = {}

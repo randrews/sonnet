@@ -1,4 +1,5 @@
-local Point = sonnet.class('Point')
+require('sonnet.middleclass')
+local Point = class('Point')
 
 ----------------------------------------
 --- Constructors
@@ -141,7 +142,7 @@ function Point.__le(pt1, pt2)
    return pt1.x <= pt2.x and pt1.y <= pt2.y
 end
 
-function test()
+function Point.static.test()
    local p = Point(2,3)
    assert(p.x == 2 and p.y == 3)
    assert(tostring(p) == "(2.00, 3.00)")

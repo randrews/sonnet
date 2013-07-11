@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -60,25 +60,27 @@
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="k">local</span> Point = sonnet.class(<span class="s">'Point'</span>)
-</pre></div>
-</td>
-</tr><tr id="section-2">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-2">&#182;</a>
-  </div>
-  
-<hr/>
-<h2>Constructors</h2>
+  <div class="highlight"><pre><span class="nt">require</span>(<span class="s">'sonnet.middleclass'</span>)
+<span class="k">local</span> Point = class(<span class="s">'Point'</span>)
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span><span class="c">--- Constructors
+</span><span class="c">----------------------------------------
+</span>
 <span class="k">function</span> <span class="nf">Point:initialize</span>(x,y)
    self.x = x
    self.y = y
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point.static.from_key</span>(k)
+    <span class="k">if</span> k == <span class="s">'up'</span> <span class="o">or</span> k == <span class="s">'w'</span> <span class="k">then</span> <span class="k">return</span> Point.north
+    <span class="k">elseif</span> k == <span class="s">'down'</span> <span class="o">or</span> k == <span class="s">'s'</span> <span class="k">then</span> <span class="k">return</span> Point.south
+    <span class="k">elseif</span> k == <span class="s">'right'</span> <span class="o">or</span> k == <span class="s">'d'</span> <span class="k">then</span> <span class="k">return</span> Point.east
+    <span class="k">elseif</span> k == <span class="s">'left'</span> <span class="o">or</span> k == <span class="s">'a'</span> <span class="k">then</span> <span class="k">return</span> Point.west <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Point.static.from_angle</span>(a)
+    <span class="k">return</span> Point(math.cos(a), -math.sin(a))
 <span class="k">end</span>
 
 Point.north = Point(0, -1) ; Point.up = Point.north
@@ -94,21 +96,11 @@ Point.northwest = Point(-1, -1)
 <span class="k">function</span> <span class="nf">Point:copy</span>()
    <span class="k">return</span> Point(self.x, self.y)
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-3">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-3">&#182;</a>
-  </div>
-  
-<hr/>
-<h2>Utils</h2>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span><span class="c">--- Utils
+</span><span class="c">----------------------------------------
+</span>
 <span class="k">function</span> <span class="nf">Point:ortho</span>(pt2)
    <span class="k">return</span> self.x == pt2.x <span class="o">or</span> self.y == pt2.y
 <span class="k">end</span>
@@ -141,21 +133,10 @@ Point.northwest = Point(-1, -1)
 <span class="k">function</span> <span class="nf">Point:dot</span>(p2)
     <span class="k">return</span> self.x*p2.x + self.y*p2.y
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-4">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-4">&#182;</a>
-  </div>
-  
-<p>With one arg: returns the distance to pt2
-With two args: returns whether the distance is less than or equal to the 2nd arg</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Point:dist</span>(pt2, max)
+<span class="c">--- With one arg: returns the distance to pt2
+</span><span class="c">--- With two args: returns whether the distance is less than or equal to the 2nd arg
+</span><span class="k">function</span> <span class="nf">Point:dist</span>(pt2, max)
    <span class="nt">assert</span>(pt2)
    <span class="k">local</span> d = (self - pt2) * (self - pt2)
    <span class="k">if</span> max <span class="k">then</span>
@@ -164,38 +145,16 @@ With two args: returns whether the distance is less than or equal to the 2nd arg
       <span class="k">return</span> math.sqrt(d.x + d.y)
    <span class="k">end</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-5">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-5">&#182;</a>
-  </div>
-  
-<p>Length of a line from (0,0) to self</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Point:length</span>()
+<span class="c">--- Length of a line from (0,0) to self
+</span><span class="k">function</span> <span class="nf">Point:length</span>()
    <span class="k">return</span> math.sqrt((self.x * self.x) + (self.y * self.y))
 <span class="k">end</span>
 
 Point.magnitude = Point.length
-</pre></div>
-</td>
-</tr><tr id="section-6">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-6">&#182;</a>
-  </div>
-  
-<p>Return a point with the same direction as self, but length 1</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Point:normal</span>()
+<span class="c">--- Return a point with the same direction as self, but length 1
+</span><span class="k">function</span> <span class="nf">Point:normal</span>()
     <span class="k">if</span> self:length() == 0 <span class="k">then</span> <span class="k">return</span> self
     <span class="k">else</span> <span class="k">return</span> self / self:length() <span class="k">end</span>
 <span class="k">end</span>
@@ -241,21 +200,10 @@ Point.translate = Point.__add
 <span class="k">function</span> <span class="nf">Point.__eq</span>(pt1, pt2)
    <span class="k">return</span> pt1.x == pt2.x <span class="o">and</span> pt1.y == pt2.y
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-7">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-7">&#182;</a>
-  </div>
-  
-<p>A point is "less than" a point if each
-coord is less than the corresponding one</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Point.__lt</span>(pt1, pt2)
+<span class="c">--- A point is "less than" a point if each
+</span><span class="c">--- coord is less than the corresponding one
+</span><span class="k">function</span> <span class="nf">Point.__lt</span>(pt1, pt2)
    <span class="k">return</span> pt1.x < pt2.x <span class="o">and</span> pt1.y < pt2.y
 <span class="k">end</span>
 
@@ -263,7 +211,7 @@ coord is less than the corresponding one</p>
    <span class="k">return</span> pt1.x <= pt2.x <span class="o">and</span> pt1.y <= pt2.y
 <span class="k">end</span>
 
-<span class="k">function</span> <span class="nf">test</span>()
+<span class="k">function</span> <span class="nf">Point.static.test</span>()
    <span class="k">local</span> p = Point(2,3)
    <span class="nt">assert</span>(p.x == 2 <span class="o">and</span> p.y == 3)
    <span class="nt">assert</span>(<span class="nt">tostring</span>(p) == <span class="s">"(2.00, 3.00)"</span>)

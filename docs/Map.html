@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -61,18 +61,17 @@
 </td>
 <td class="code">
   <div class="highlight"><pre><span class="k">local</span> Point = <span class="nt">require</span>(<span class="s">'sonnet.Point'</span>)
-<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.table'</span>)
 
-<span class="k">local</span> Map = sonnet.class(<span class="s">'Map'</span>)
+<span class="k">local</span> Map = class(<span class="s">'Map'</span>)
 
 <span class="k">function</span> <span class="nf">Map:initialize</span>(width, height, fill)
     fill = fill <span class="o">or</span> 0
     self.width = width
     self.height = height
 
-    <span class="k">local</span> c = {}
-    <span class="k">for</span> i=1, width*height <span class="k">do</span> c[i]=fill <span class="k">end</span>
-    self.cells = List(c)
+    self.cells = table()
+    <span class="k">for</span> i=0, width*height-1 <span class="k">do</span> self.cells[i]=fill <span class="k">end</span>
 <span class="k">end</span>
 
 <span class="k">function</span> <span class="nf">Map.static.new_from_strings</span>(strs)
@@ -143,9 +142,20 @@ Map.__call = Map.at
 
    <span class="k">return</span> <span class="k">function</span>()
              <span class="k">local</span> r = p <span class="c">-- return this one...
-</span>
-             <span class="c">-- Decide what the next one will be:
-</span>             p = p + Point(1, 0)
+</span></pre></div>
+</td>
+</tr><tr id="section-2">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-2">&#182;</a>
+  </div>
+  
+<p>Decide what the next one will be:</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>             p = p + Point(1, 0)
              <span class="k">if</span> p.x > maxx <span class="k">then</span> p = Point(start.x, p.y+1) <span class="k">end</span>
 
              <span class="k">if</span> r.y > maxy <span class="k">then</span> <span class="k">return</span> <span class="k">nil</span>
@@ -168,7 +178,7 @@ Map.__call = Map.at
 
 <span class="k">function</span> <span class="nf">Map:find</span>(fn)
    <span class="nt">assert</span>(<span class="nt">type</span>(fn) == <span class="s">'function'</span>)
-   <span class="k">local</span> fit = List{}
+   <span class="k">local</span> fit = table()
    <span class="k">for</span> pt <span class="k">in</span> self:each() <span class="k">do</span>
       <span class="k">if</span> fn(self, pt) <span class="k">then</span> fit:push(pt) <span class="k">end</span>
    <span class="k">end</span>
@@ -186,20 +196,9 @@ Map.__call = Map.at
    <span class="k">if</span> fit:empty() <span class="k">then</span> <span class="k">return</span> <span class="k">nil</span>
    <span class="k">else</span> <span class="k">return</span> fit:random() <span class="k">end</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-2">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-2">&#182;</a>
-  </div>
-  
-<hr/>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span>
 <span class="k">function</span> <span class="nf">Map:empty</span>(pt)
    <span class="k">return</span> self:at(pt) == <span class="s">''</span>
 <span class="k">end</span>
@@ -226,7 +225,7 @@ Map.__call = Map.at
        fn = <span class="k">function</span>(_, p) <span class="k">return</span> self:at(p) == val <span class="k">end</span>
    <span class="k">end</span>
 
-   <span class="k">local</span> fit = List{}
+   <span class="k">local</span> fit = table()
    <span class="k">for</span> _, p <span class="k">in</span> <span class="nt">ipairs</span>(all) <span class="k">do</span>
        <span class="k">if</span> self:inside(p) <span class="o">and</span> (<span class="o">not</span> fn <span class="o">or</span> fn(self, p)) <span class="k">then</span> fit:push(p) <span class="k">end</span>
    <span class="k">end</span>
@@ -234,11 +233,23 @@ Map.__call = Map.at
 <span class="k">end</span>
 
 <span class="k">function</span> <span class="nf">Map:connected</span>(start, fn, diag)
-    <span class="c">-- Turn a point into a number so we can use it a a table key
-</span>    <span class="k">local</span> <span class="k">function</span> <span class="nf">num</span>(pt) <span class="k">return</span> pt.x + pt.y * self.width <span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-3">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-3">&#182;</a>
+  </div>
+  
+<p>Turn a point into a number so we can use it a a table key</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>    <span class="k">local</span> <span class="k">function</span> <span class="nf">num</span>(pt) <span class="k">return</span> pt.x + pt.y * self.width <span class="k">end</span>
     <span class="k">local</span> points = {[num(start)]=start} <span class="c">-- maps from x+y*width to Point
 </span>    <span class="k">local</span> closed = {}
-    <span class="k">local</span> open = List{start}
+    <span class="k">local</span> open = table(start)
 
     <span class="k">while</span> <span class="o">not</span> open:empty() <span class="k">do</span>
         <span class="k">local</span> p = open:shift()
@@ -254,7 +265,7 @@ Map.__call = Map.at
         closed[num(p)] = p
     <span class="k">end</span>
 
-    <span class="k">local</span> points_list = List()
+    <span class="k">local</span> points_list = table()
     <span class="k">for</span> _, p <span class="k">in</span> <span class="nt">pairs</span>(points) <span class="k">do</span> points_list:push(p) <span class="k">end</span>
     <span class="k">return</span> points_list
 <span class="k">end</span>
@@ -264,43 +275,88 @@ Map.__call = Map.at
                           <span class="k">function</span>(map, p) <span class="k">return</span> map:at(p) == value <span class="k">end</span>,
                           diag)
 <span class="k">end</span>
+
+<span class="c">----------------------------------------
+</span>
+<span class="k">function</span> <span class="nf">Map.static.test</span>()
 </pre></div>
 </td>
-</tr><tr id="section-3">
+</tr><tr id="section-4">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-3">&#182;</a>
+    <a class="pilcrow" href="#section-4">&#182;</a>
   </div>
   
-<hr/>
+<p>Constructor</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
-<span class="k">function</span> <span class="nf">Map.static.test</span>()
-   <span class="c">-- Constructor
-</span>   <span class="k">local</span> m = Map(10, 10)
+  <div class="highlight"><pre>   <span class="k">local</span> m = Map(10, 10)
    <span class="nt">assert</span>(m.width == 10)
    <span class="nt">assert</span>(m:inside(Point(3,3)))
    <span class="nt">assert</span>(<span class="o">not</span> m:inside(Point(10,10)))
+</pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<p>clear / set</p>
 
-   <span class="c">-- clear / set
-</span>   m:clear(0)
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   m:clear(0)
    m:at(Point(3,2),1)
+</pre></div>
+</td>
+</tr><tr id="section-6">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-6">&#182;</a>
+  </div>
+  
+<p>at</p>
 
-   <span class="c">-- at
-</span>   <span class="nt">assert</span>(m:at(Point(1,1)) == 0)
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="nt">assert</span>(m:at(Point(1,1)) == 0)
    <span class="nt">assert</span>(m:at(Point(3,2)) == 1)
    <span class="nt">assert</span>(m:at(Point(10,10)) == <span class="k">nil</span>)
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<p>each</p>
 
-   <span class="c">-- each
-</span>   <span class="k">local</span> n = 0
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="k">local</span> n = 0
    <span class="k">for</span> p <span class="k">in</span> m:each() <span class="k">do</span> n = n + 1 <span class="k">end</span>
    <span class="nt">assert</span>(n == 100)
+</pre></div>
+</td>
+</tr><tr id="section-8">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-8">&#182;</a>
+  </div>
+  
+<p>fit</p>
 
-   <span class="c">-- fit
-</span>   m:clear(<span class="s">''</span>)
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   m:clear(<span class="s">''</span>)
    m:at(Point(1,0),1)
    <span class="nt">assert</span>(m:neighbors(Point(5,5)):length() == 4)
    <span class="nt">assert</span>(m:neighbors(Point(0,1)):length() == 3)

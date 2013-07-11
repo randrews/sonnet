@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -60,13 +60,14 @@
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+  <div class="highlight"><pre><span class="nt">require</span>(<span class="s">'sonnet.table'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.middleclass'</span>)
 
-<span class="k">local</span> Promise = sonnet.class(<span class="s">'Promise'</span>)
+<span class="k">local</span> Promise = class(<span class="s">'Promise'</span>)
 
 <span class="k">function</span> <span class="nf">Promise:initialize</span>()
     self.finished = <span class="k">false</span>
-    self.functions = List()
+    self.functions = table()
     self.arguments = <span class="k">nil</span>
 <span class="k">end</span>
 

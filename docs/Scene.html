@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -56,83 +56,57 @@
     <a class="pilcrow" href="#section-1">&#182;</a>
   </div>
   
-<p><strong>Scenes</strong> are an abstraction of the Love callbacks: they
-encapsulate drawing, update, and input functions into
-one object. You can define multiple scenes and install
-them one at a time, through the scene stack.</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
+  <div class="highlight"><pre><span class="c">--- **Scenes** are an abstraction of the Love callbacks: they
+</span><span class="c">--- encapsulate drawing, update, and input functions into
+</span><span class="c">--- one object. You can define multiple scenes and install
+</span><span class="c">--- them one at a time, through the scene stack.
+</span>
+<span class="nt">require</span>(<span class="s">'sonnet.table'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.middleclass'</span>)
 <span class="k">local</span> Clock = <span class="nt">require</span>(<span class="s">'sonnet.Clock'</span>)
 <span class="k">local</span> Tween = <span class="nt">require</span>(<span class="s">'sonnet.Tween'</span>)
 <span class="k">local</span> Effect = <span class="nt">require</span>(<span class="s">'sonnet.Effect'</span>)
-<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
 
-<span class="k">local</span> Scene = sonnet.class(<span class="s">'Scene'</span>)
-</pre></div>
-</td>
-</tr><tr id="section-2">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-2">&#182;</a>
-  </div>
-  
-<h2>The Scene stack:</h2>
+<span class="k">local</span> Scene = class(<span class="s">'Scene'</span>)
 
-<p>Scene manages a stack of scenes. Each scene is a set
-of love event handlers (draw, update, etc) as well as
-Tween / Clock / Messenger / Effect global lists. You
-can push and pop on the Scene stack, which is the
-standard method of changing scenes.</p>
+<span class="c">--- ## The Scene stack:
+</span><span class="c">---
+</span><span class="c">--- Scene manages a stack of scenes. Each scene is a set
+</span><span class="c">--- of love event handlers (draw, update, etc) as well as
+</span><span class="c">--- Tween / Clock / Messenger / Effect global lists. You
+</span><span class="c">--- can push and pop on the Scene stack, which is the
+</span><span class="c">--- standard method of changing scenes.
+</span><span class="c">---
+</span><span class="c">--- ### Scene lifecycle:
+</span><span class="c">---
+</span><span class="c">---     scene1 = MyScene()  -- calls your constructor
+</span><span class="c">---     scene2 = MyOtherScene()  -- calls your constructor
+</span><span class="c">---     Scene.push(scene1)  -- scene1:on_install
+</span><span class="c">---     Scene.push(scene2)  -- scene1:on_pause, scene2:on_install
+</span><span class="c">---     Scene.pop() -- scene2:on_exit, scene1:on_resume, scene1:on_install
+</span><span class="c">---     Scene.pop()  -- scene1:on_exit
+</span><span class="c">---
+</span><span class="c">--- ### Event handler sequence:
+</span><span class="c">---
+</span><span class="c">--- - constructor
+</span><span class="c">--- - on_install
+</span><span class="c">--- - on_pause
+</span><span class="c">--- - on_resume
+</span><span class="c">--- - on_install
+</span><span class="c">--- - on_exit
+</span><span class="c">---
+</span><span class="c">--- (pause, resume, and install may be called several times, the rest only once)
+</span>Scene.stack = {}
 
-<h3>Scene lifecycle:</h3>
-
-<pre><code>scene1 = MyScene()  -- calls your constructor
-scene2 = MyOtherScene()  -- calls your constructor
-Scene.push(scene1)  -- scene1:on_install
-Scene.push(scene2)  -- scene1:on_pause, scene2:on_install
-Scene.pop() -- scene2:on_exit, scene1:on_resume, scene1:on_install
-Scene.pop()  -- scene1:on_exit
-</code></pre>
-
-<h3>Event handler sequence:</h3>
-
-<ul>
-    <li>constructor</li>
-    <li>on_install</li>
-    <li>on_pause</li>
-    <li>on_resume</li>
-    <li>on_install</li>
-    <li>on_exit</li>
-</ul>
-
-<p>(pause, resume, and install may be called several times, the rest only once)</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>Scene.stack = {}
-</pre></div>
-</td>
-</tr><tr id="section-3">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-3">&#182;</a>
-  </div>
-  
-<h2>Scene.push</h2>
-<p>Push a scene on to the stack, pausing any scene that's already there.</p>
-
-<ul>
-    <li><code>scene</code> - The scene to push</li>
-</ul>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Scene.push
+</span><span class="c">--- Push a scene on to the stack, pausing any scene that's already there.
+</span><span class="c">---
+</span><span class="c">--- - `scene` - The scene to push
+</span>
 <span class="k">function</span> <span class="nf">Scene.static.push</span>(scene)
     <span class="k">local</span> stk = Scene.stack
     <span class="k">if</span> #stk > 0 <span class="k">then</span>
@@ -142,22 +116,11 @@ Scene.pop()  -- scene1:on_exit
     table.insert(stk, scene)
     scene:install()
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-4">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-4">&#182;</a>
-  </div>
-  
-<h2>Scene.pop</h2>
-<p>Pops the current scene off the stack, which calls its <code>on_exit</code> handler
-and resumes the scene below it (if any).</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Scene.pop
+</span><span class="c">--- Pops the current scene off the stack, which calls its `on_exit` handler
+</span><span class="c">--- and resumes the scene below it (if any).
+</span>
 <span class="k">function</span> <span class="nf">Scene.static.pop</span>()
     <span class="k">local</span> stk = Scene.stack
     <span class="k">if</span> #stk == 0 <span class="k">then</span> <span class="nt">error</span>(<span class="s">"Scene stack underflow"</span>) <span class="k">end</span>
@@ -170,21 +133,10 @@ and resumes the scene below it (if any).</p>
         stk[#stk]:install()
     <span class="k">end</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-5">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-5">&#182;</a>
-  </div>
-  
-<h2>Event handler methods</h2>
-<p>Scenes should override these</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">Scene:on_install</span>() <span class="k">end</span>
+<span class="c">--- ## Event handler methods
+</span><span class="c">--- Scenes should override these
+</span><span class="k">function</span> <span class="nf">Scene:on_install</span>() <span class="k">end</span>
 <span class="k">function</span> <span class="nf">Scene:on_pause</span>() <span class="k">end</span>
 <span class="k">function</span> <span class="nf">Scene:on_resume</span>() <span class="k">end</span>
 <span class="k">function</span> <span class="nf">Scene:on_exit</span>() <span class="k">end</span>
@@ -193,23 +145,12 @@ and resumes the scene below it (if any).</p>
 <span class="k">function</span> <span class="nf">Scene:keypressed</span>(key, unicode) <span class="k">end</span>
 <span class="k">function</span> <span class="nf">Scene:keyreleased</span>(key) <span class="k">end</span>
 <span class="k">function</span> <span class="nf">Scene:mousepressed</span>(x, y, button) <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-6">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-6">&#182;</a>
-  </div>
-  
-<h2>Scene:install</h2>
-<p>Installs this scene as the current scene (the one that
-is being drawn and updated, taking input, etc). You
-should probably not call this; use <code>Scene.push()</code> instead.</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Scene:install
+</span><span class="c">--- Installs this scene as the current scene (the one that
+</span><span class="c">--- is being drawn and updated, taking input, etc). You
+</span><span class="c">--- should probably not call this; use `Scene.push()` instead.
+</span>
 <span class="k">function</span> <span class="nf">Scene:install</span>()
     <span class="nt">assert</span>(love)
 
@@ -220,51 +161,17 @@ should probably not call this; use <code>Scene.push()</code> instead.</p>
     love.keyreleased = <span class="k">function</span>(k) self:keyreleased(k) <span class="k">end</span>
     love.mousepressed = <span class="k">function</span>(x, y, b) self:mousepressed(x, y, b) <span class="k">end</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-7">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-7">&#182;</a>
-  </div>
-  
-<hr/>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
-</pre></div>
-</td>
-</tr><tr id="section-8">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-8">&#182;</a>
-  </div>
-  
-<h2>Internal stuff</h2>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
-</pre></div>
-</td>
-</tr><tr id="section-9">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-9">&#182;</a>
-  </div>
-  
-<h2><code>update_with_sonnet</code></h2>
-<p>Scenes automatically call all Sonnet things (Clock, Tween, etc)
-with their updates.</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span>
+<span class="c">--- ## Internal stuff
+</span>
+<span class="c">--- ## `update_with_sonnet`
+</span><span class="c">--- Scenes automatically call all Sonnet things (Clock, Tween, etc)
+</span><span class="c">--- with their updates.
+</span>
 <span class="k">function</span> <span class="nf">Scene:update_with_sonnet</span>(dt)
+    self:update_fps(dt)
     Clock.update(dt)
     Tween.update(dt)
     Effect.update(dt)
@@ -272,67 +179,72 @@ with their updates.</p>
 <span class="k">end</span>
 </pre></div>
 </td>
-</tr><tr id="section-10">
+</tr><tr id="section-2">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-10">&#182;</a>
+    <a class="pilcrow" href="#section-2">&#182;</a>
   </div>
   
-<h2><code>draw_with_sonnet</code></h2>
-<p>Scenes automatically draw Sonnet effects, you don't have to call Effect.draw by hand.</p>
+<h2><code>update_fps</code></h2>
+<p>Update our count of time and total fps count</p>
 
 
 </td>
 <td class="code">
   <div class="highlight"><pre>
+<span class="k">function</span> <span class="nf">Scene:update_fps</span>(dt)
+    <span class="k">if</span> <span class="o">not</span> self.frame_count <span class="k">then</span>
+        self.frame_time = 0
+        self.frame_count = 0
+    <span class="k">end</span>
+
+    self.frame_time = self.frame_time + dt
+    self.frame_count = self.frame_count + 1
+
+    <span class="k">if</span> self.frame_time >= 1.0 <span class="k">then</span>
+        self.frames_last_second = self.frame_count
+        self.frame_count = 0
+        self.frame_time = 0
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c">--- ## `draw_with_sonnet`
+</span><span class="c">--- Scenes automatically draw Sonnet effects, you don't have to call Effect.draw by hand.
+</span>
 <span class="k">function</span> <span class="nf">Scene:draw_with_sonnet</span>(dt)
     self:draw()
     Effect.draw()
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-11">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-11">&#182;</a>
-  </div>
-  
-<h2><code>pause</code></h2>
-<p>When paused, scenes keep a copy of all global Sonnet
-stuff (Effect, Tween, etc), so the next scene has a clean slate</p>
 
+<span class="c">--- ## `fps`
+</span><span class="c">--- Draw the FPS in the upper left corner
+</span>
+<span class="k">function</span> <span class="nf">Scene:fps</span>()
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.<span class="nt">print</span>(self.frames_last_second <span class="o">or</span> <span class="s">'--'</span>, 10, 10)
+<span class="k">end</span>
 
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## `pause`
+</span><span class="c">--- When paused, scenes keep a copy of all global Sonnet
+</span><span class="c">--- stuff (Effect, Tween, etc), so the next scene has a clean slate
+</span>
 <span class="k">function</span> <span class="nf">Scene:pause</span>()
     self:on_pause()
 
     self.clocks = Clock.all
     self.tweens = Tween.all
     self.effects = Effect.all
-    Clock.all = List()
-    Tween.all = List()
-    Effect.all = List()
+    Clock.all = table()
+    Tween.all = table()
+    Effect.all = table()
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-12">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-12">&#182;</a>
-  </div>
-  
-<h2><code>resume</code></h2>
-<p>When resumed, scenes re-install all the global Sonnet
-stuff (Effect, Tween, etc) that they saved</p>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## `resume`
+</span><span class="c">--- When resumed, scenes re-install all the global Sonnet
+</span><span class="c">--- stuff (Effect, Tween, etc) that they saved
+</span>
 <span class="k">function</span> <span class="nf">Scene:resume</span>()
-    <span class="k">if</span> self.clocks <span class="o">and</span> self.tweens <span class="k">then</span>
+    <span class="k">if</span> self.clocks <span class="o">and</span> self.tweens <span class="o">and</span> self.effects <span class="k">then</span>
         Clock.all = self.clocks
         self.clocks = <span class="k">nil</span>
 
@@ -347,35 +259,12 @@ stuff (Effect, Tween, etc) that they saved</p>
         <span class="nt">error</span>(<span class="s">"Scene wasn't paused"</span>)
     <span class="k">end</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-13">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-13">&#182;</a>
-  </div>
-  
-<hr/>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
-</pre></div>
-</td>
-</tr><tr id="section-14">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-14">&#182;</a>
-  </div>
-  
-<h2><code>test</code></h2>
-<p>A unit test</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span>
+<span class="c">--- ## `test`
+</span><span class="c">--- A unit test
+</span>
 <span class="k">function</span> <span class="nf">Scene.static.test</span>()
     love = {}
     <span class="k">local</span> messages = {}

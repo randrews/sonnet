@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -56,16 +56,36 @@
     <a class="pilcrow" href="#section-1">&#182;</a>
   </div>
   
-<p><strong>Math</strong> is a module of math helper functions
-useful in game development</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
+  <div class="highlight"><pre><span class="c">--- **Math** is a module of math helper functions
+</span><span class="c">--- useful in game development
+</span>
 <span class="nt">module</span>(..., package.seeall)
-<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.table'</span>)
 <span class="k">local</span> Point = <span class="nt">require</span>(<span class="s">'sonnet.Point'</span>)
+
+<span class="c">--- # Random numbers
+</span><span class="c">---
+</span><span class="c">--- A set of functions to handle random and quasi-random sequences
+</span>
+<span class="c">--- ## halton
+</span><span class="c">---
+</span><span class="c">--- Returns the first `num` values in the scrambled
+</span><span class="c">--- Halton sequence for the given base.
+</span><span class="c">---
+</span><span class="c">--- The Halton sequence is a quasi-random sequence
+</span><span class="c">--- used to generate evenly-distributed random values.
+</span><span class="c">---
+</span><span class="c">--- - `base` is a prime number (probably 2 or 3)
+</span><span class="c">--- - `num` is the number of values to return.
+</span><span class="c">---
+</span><span class="c">--- Returns a List of `num` values between 0 and 1.
+</span>
+<span class="k">function</span> <span class="nf">halton</span>(base, num)
+    <span class="k">local</span> values = table()
 </pre></div>
 </td>
 </tr><tr id="section-2">
@@ -74,14 +94,19 @@ useful in game development</p>
     <a class="pilcrow" href="#section-2">&#182;</a>
   </div>
   
-<h1>Random numbers</h1>
-
-<p>A set of functions to handle random and quasi-random sequences</p>
+<p>The permutation is a table of 9 digits in random order</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
+  <div class="highlight"><pre>    <span class="k">local</span> digits = table(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    <span class="k">local</span> permutation = {}
+    <span class="k">repeat</span>
+        <span class="k">local</span> _, i = digits:random()
+        table.insert(permutation, digits:remove_at(i))
+    <span class="k">until</span> digits:empty()
+
+    <span class="k">for</span> n = 1, num <span class="k">do</span>
 </pre></div>
 </td>
 </tr><tr id="section-3">
@@ -90,39 +115,12 @@ useful in game development</p>
     <a class="pilcrow" href="#section-3">&#182;</a>
   </div>
   
-<h2>halton</h2>
-
-<p>Returns the first <code>num</code> values in the scrambled
-Halton sequence for the given base.</p>
-
-<p>The Halton sequence is a quasi-random sequence
-used to generate evenly-distributed random values.</p>
-
-<ul>
-    <li><code>base</code> is a prime number (probably 2 or 3)</li>
-    <li><code>num</code> is the number of values to return.</li>
-</ul>
-
-<p>Returns a List of <code>num</code> values between 0 and 1.</p>
+<p>First generate the number...</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
-<span class="k">function</span> <span class="nf">halton</span>(base, num)
-    <span class="k">local</span> values = List()
-
-    <span class="c">-- The permutation is a table of 9 digits in random order
-</span>    <span class="k">local</span> digits = List{1, 2, 3, 4, 5, 6, 7, 8, 9}
-    <span class="k">local</span> permutation = {}
-    <span class="k">repeat</span>
-        <span class="k">local</span> _, i = digits:random()
-        table.insert(permutation, digits:remove_at(i))
-    <span class="k">until</span> digits:empty()
-
-    <span class="k">for</span> n = 1, num <span class="k">do</span>
-        <span class="c">-- First generate the number...
-</span>        <span class="k">local</span> result = 0
+  <div class="highlight"><pre>        <span class="k">local</span> result = 0
         <span class="k">local</span> f = 1 / base
         <span class="k">local</span> i = n
 
@@ -131,22 +129,6 @@ used to generate evenly-distributed random values.</p>
             i = math.floor(i / base)
             f = f / base;
         <span class="k">end</span>
-
-        <span class="c">-- Then scramble it...
-</span>        <span class="k">local</span> r = 0
-        <span class="k">for</span> n = 0, 15 <span class="k">do</span>
-            <span class="k">local</span> d = math.floor(result * (10^n)  10)
-            <span class="k">if</span> d > 0 <span class="k">then</span>
-                r = r + permutation[d] / (10^n)
-            <span class="k">end</span>
-        <span class="k">end</span>
-
-        <span class="c">-- Then add it to the list
-</span>        values:push(r)
-    <span class="k">end</span>
-
-    <span class="k">return</span> values
-<span class="k">end</span>
 </pre></div>
 </td>
 </tr><tr id="section-4">
@@ -155,25 +137,50 @@ used to generate evenly-distributed random values.</p>
     <a class="pilcrow" href="#section-4">&#182;</a>
   </div>
   
-<h2>qrandom points</h2>
-
-<p>Generate a list of quasi-random Points
-using a scrambled Halton sequence</p>
-
-<ul>
-    <li><code>num</code> is the number of Points to generate</li>
-    <li><code>width</code> is the width of the range to place them in</li>
-    <li><code>height</code> is the height of the range to place them in</li>
-</ul>
-
-<p>Returns a List of <code>num</code> Points</p>
+<p>Then scramble it...</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
+  <div class="highlight"><pre>        <span class="k">local</span> r = 0
+        <span class="k">for</span> n = 0, 15 <span class="k">do</span>
+            <span class="k">local</span> d = math.floor(result * (10^n)  10)
+            <span class="k">if</span> d > 0 <span class="k">then</span>
+                r = r + permutation[d] / (10^n)
+            <span class="k">end</span>
+        <span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<p>Then add it to the list</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        values:push(r)
+    <span class="k">end</span>
+
+    <span class="k">return</span> values
+<span class="k">end</span>
+
+<span class="c">--- ## qrandom points
+</span><span class="c">---
+</span><span class="c">--- Generate a list of quasi-random Points
+</span><span class="c">--- using a scrambled Halton sequence
+</span><span class="c">---
+</span><span class="c">--- - `num` is the number of Points to generate
+</span><span class="c">--- - `width` is the width of the range to place them in
+</span><span class="c">--- - `height` is the height of the range to place them in
+</span><span class="c">---
+</span><span class="c">--- Returns a list of `num` Points
+</span>
 <span class="k">function</span> <span class="nf">qrandom_points</span>(num, width, height)
-    <span class="k">local</span> points = List()
+    <span class="k">local</span> points = table()
     <span class="k">local</span> x = halton(2, num)
     <span class="k">local</span> y = halton(3, num)
 
@@ -185,33 +192,20 @@ using a scrambled Halton sequence</p>
 
     <span class="k">return</span> points
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-5">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-5">&#182;</a>
-  </div>
-  
-<h2>random points</h2>
 
-<p>Generate a list of random Points
-using math.random.</p>
-
-<ul>
-    <li><code>num</code> is the number of Points to generate</li>
-    <li><code>width</code> is the width of the range to place them in</li>
-    <li><code>height</code> is the height of the range to place them in</li>
-</ul>
-
-<p>Returns a List of <code>num</code> Points</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## random points
+</span><span class="c">---
+</span><span class="c">--- Generate a list of random Points
+</span><span class="c">--- using math.random.
+</span><span class="c">---
+</span><span class="c">--- - `num` is the number of Points to generate
+</span><span class="c">--- - `width` is the width of the range to place them in
+</span><span class="c">--- - `height` is the height of the range to place them in
+</span><span class="c">---
+</span><span class="c">--- Returns a list of `num` Points
+</span>
 <span class="k">function</span> <span class="nf">random_points</span>(num, width, height)
-    <span class="k">local</span> points = List()
+    <span class="k">local</span> points = table()
 
     <span class="k">for</span> n = 1, num <span class="k">do</span>
         <span class="k">local</span> x = math.random(width)
@@ -221,7 +215,58 @@ using math.random.</p>
 
     <span class="k">return</span> points
 <span class="k">end</span>
-</pre></div>
+
+<span class="c">--- ## round
+</span><span class="c">---
+</span><span class="c">--- If the fractional part of `n` is 0.5 or above, returns `ceil(n)`;
+</span><span class="c">--- otherwise, `floor(n)`
+</span>
+<span class="k">function</span> <span class="nf">round</span>(n)
+    <span class="k">local</span> fpart = ((n * 10)  10) / 10
+    <span class="k">if</span> fpart >= 0.5 <span class="k">then</span> <span class="k">return</span> math.ceil(n)
+    <span class="k">else</span> <span class="k">return</span> math.floor(n) <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c">--- # Collisions
+</span><span class="c">---
+</span><span class="c">--- This is a set of functions to determine if two shapes intersect
+</span>
+<span class="c">--- ## collision point rect
+</span><span class="c">---
+</span><span class="c">--- Returns whether a point lies within a rectangle
+</span><span class="c">---
+</span><span class="c">--- - `pt` is the point
+</span><span class="c">--- - `topleft` is a Point representing the top-left corner of the rect
+</span><span class="c">--- - `size` is a Point representing the dimensions of the rect.
+</span><span class="c">---
+</span><span class="c">--- Returns true or false.
+</span>
+<span class="k">function</span> <span class="nf">collision_point_rect</span>(pt, topleft, size)
+    <span class="k">return</span> pt.x >= topleft.x <span class="o">and</span>
+        pt.x <= topleft.x+size.x <span class="o">and</span>
+        pt.y >= topleft.y <span class="o">and</span>
+        pt.y <= topleft.y+size.y
+<span class="k">end</span>
+
+<span class="c">--- ## collision circle rect
+</span><span class="c">---
+</span><span class="c">--- Returns whether a rectangle and a circle have collided, and if so how.
+</span><span class="c">---
+</span><span class="c">--- - `center` is a Point for the center of the circle
+</span><span class="c">--- - `radius` is the radius of the circle.
+</span><span class="c">--- - `topleft` is a Point for the top-left corner of a rectangle
+</span><span class="c">--- - `size` is a Point representing the dimensions of the rect.
+</span><span class="c">---
+</span><span class="c">--- If no collision, then returns false.
+</span><span class="c">---
+</span><span class="c">--- If there is a collision, it returns true, and a unit-length Point representing
+</span><span class="c">--- the direction the circle will have to move to move away from the collision.
+</span>
+<span class="k">function</span> <span class="nf">collision_circle_rect</span>(center, radius, topleft, size)
+    <span class="k">local</span> rect_center = topleft + size/2
+    <span class="k">local</span> diag = math.sqrt(size.x*size.x + size.y*size.y) <span class="c">-- Length of the rect diagonal
+</span>    <span class="k">local</span> dist = center:dist(rect_center) <span class="c">-- Distance the centers are apart
+</span></pre></div>
 </td>
 </tr><tr id="section-6">
 <td class="docs">
@@ -229,20 +274,14 @@ using math.random.</p>
     <a class="pilcrow" href="#section-6">&#182;</a>
   </div>
   
-<h2>round</h2>
-
-<p>If the fractional part of <code>n</code> is 0.5 or above, returns <code>ceil(n)</code>;
-otherwise, <code>floor(n)</code></p>
+<p>First, check a circle circumscribing the rect.
+Obviously no collision, return false. This is to make the
+most common case (you're really far away) fast.</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
-<span class="k">function</span> <span class="nf">round</span>(n)
-    <span class="k">local</span> fpart = ((n * 10)  10) / 10
-    <span class="k">if</span> fpart >= 0.5 <span class="k">then</span> <span class="k">return</span> math.ceil(n)
-    <span class="k">else</span> <span class="k">return</span> math.floor(n) <span class="k">end</span>
-<span class="k">end</span>
+  <div class="highlight"><pre>    <span class="k">if</span> dist > diag/2 + radius <span class="k">then</span> <span class="k">return</span> <span class="k">false</span> <span class="k">end</span>
 </pre></div>
 </td>
 </tr><tr id="section-7">
@@ -251,9 +290,7 @@ otherwise, <code>floor(n)</code></p>
     <a class="pilcrow" href="#section-7">&#182;</a>
   </div>
   
-<h1>Collisions</h1>
-
-<p>This is a set of functions to determine if two shapes intersect</p>
+<p>Then, let's see if we hit one of the walls of the rect:</p>
 
 
 </td>
@@ -267,28 +304,18 @@ otherwise, <code>floor(n)</code></p>
     <a class="pilcrow" href="#section-8">&#182;</a>
   </div>
   
-<h2>collision point rect</h2>
-
-<p>Returns whether a point lies within a rectangle</p>
-
-<ul>
-    <li><code>pt</code> is the point</li>
-    <li><code>topleft</code> is a Point representing the top-left corner of the rect</li>
-    <li><code>size</code> is a Point representing the dimensions of the rect.</li>
-</ul>
-
-<p>Returns true or false.</p>
+<p>We may hit a top / btm wall if we're too close:</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
-<span class="k">function</span> <span class="nf">collision_point_rect</span>(pt, topleft, size)
-    <span class="k">return</span> pt.x >= topleft.x <span class="o">and</span>
-        pt.x <= topleft.x+size.x <span class="o">and</span>
-        pt.y >= topleft.y <span class="o">and</span>
-        pt.y <= topleft.y+size.y
-<span class="k">end</span>
+  <div class="highlight"><pre>    <span class="k">if</span> center.x >= rect_center.x-size.x/2 <span class="o">and</span> center.x <= rect_center.x+size.x/2 <span class="k">then</span>
+        <span class="k">if</span> math.abs(center.y-rect_center.y) > radius + size.y/2 <span class="k">then</span> <span class="k">return</span> <span class="k">false</span>
+        <span class="k">else</span> <span class="c">-- we hit it, move either up or down to resolve
+</span>            <span class="k">if</span> center.y < rect_center.y <span class="k">then</span> <span class="k">return</span> <span class="k">true</span>, Point(0, -1)
+            <span class="k">else</span> <span class="k">return</span> <span class="k">true</span>, Point(0, 1) <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
 </pre></div>
 </td>
 </tr><tr id="section-9">
@@ -297,84 +324,117 @@ otherwise, <code>floor(n)</code></p>
     <a class="pilcrow" href="#section-9">&#182;</a>
   </div>
   
-<h2>collision circle rect</h2>
-
-<p>Returns whether a rectangle and a circle have collided, and if so how.</p>
-
-<ul>
-    <li><code>center</code> is a Point for the center of the circle</li>
-    <li><code>radius</code> is the radius of the circle.</li>
-    <li><code>topleft</code> is a Point for the top-left corner of a rectangle</li>
-    <li><code>size</code> is a Point representing the dimensions of the rect.</li>
-</ul>
-
-<p>If no collision, then returns false.</p>
-
-<p>If there is a collision, it returns true, and a unit-length Point representing
-the direction the circle will have to move to move away from the collision.</p>
+<p>We may hit a left / rt wall if we're too close:</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
-<span class="k">function</span> <span class="nf">collision_circle_rect</span>(center, radius, topleft, size)
-    <span class="k">local</span> rect_center = topleft + size/2
-    <span class="k">local</span> diag = math.sqrt(size.x*size.x + size.y*size.y) <span class="c">-- Length of the rect diagonal
-</span>    <span class="k">local</span> dist = center:dist(rect_center) <span class="c">-- Distance the centers are apart
-</span>
-    <span class="c">-- First, check a circle circumscribing the rect.
-</span>    <span class="c">-- Obviously no collision, return false. This is to make the
-</span>    <span class="c">-- most common case (you're really far away) fast.
-</span>    <span class="k">if</span> dist > diag/2 + radius <span class="k">then</span> <span class="k">return</span> <span class="k">false</span> <span class="k">end</span>
-
-    <span class="c">-- Then, let's see if we hit one of the walls of the rect:
-</span>
-    <span class="c">-- We may hit a top / btm wall if we're too close:
-</span>    <span class="k">if</span> center.x >= rect_center.x-size.x/2 <span class="o">and</span> center.x <= rect_center.x+size.x/2 <span class="k">then</span>
-        <span class="k">if</span> math.abs(center.y-rect_center.y) > radius + size.y/2 <span class="k">then</span> <span class="k">return</span> <span class="k">false</span>
-        <span class="k">else</span> <span class="c">-- we hit it, move either up or down to resolve
-</span>            <span class="k">if</span> center.y < rect_center.y <span class="k">then</span> <span class="k">return</span> <span class="k">true</span>, Point(0, -1)
-            <span class="k">else</span> <span class="k">return</span> <span class="k">true</span>, Point(0, 1) <span class="k">end</span>
-        <span class="k">end</span>
-    <span class="k">end</span>
-
-    <span class="c">-- We may hit a left / rt wall if we're too close:
-</span>    <span class="k">if</span> center.y >= rect_center.y-size.y/2 <span class="o">and</span> center.y <= rect_center.y+size.x/2 <span class="k">then</span>
+  <div class="highlight"><pre>    <span class="k">if</span> center.y >= rect_center.y-size.y/2 <span class="o">and</span> center.y <= rect_center.y+size.x/2 <span class="k">then</span>
         <span class="k">if</span> math.abs(center.x-rect_center.x) > radius + size.x/2 <span class="k">then</span> <span class="k">return</span> <span class="k">false</span>
         <span class="k">else</span> <span class="c">-- we hit it, move either up or down to resolve
 </span>            <span class="k">if</span> center.x < rect_center.x <span class="k">then</span> <span class="k">return</span> <span class="k">true</span>, Point(-1, 0)
             <span class="k">else</span> <span class="k">return</span> <span class="k">true</span>, Point(1, 0) <span class="k">end</span>
         <span class="k">end</span>
     <span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-10">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-10">&#182;</a>
+  </div>
+  
+<p>We're still here, so we are diagonal-wise to the rect.</p>
 
-    <span class="c">-- We're still here, so we are diagonal-wise to the rect.
-</span>
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>
     <span class="k">if</span> center.x < rect_center.x <span class="o">and</span> center.y < rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x-size.x/2, rect_center.y-size.y/2), diag/2+radius) <span class="k">then</span>
-        <span class="c">-- We hit the top left corner
-</span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
+</pre></div>
+</td>
+</tr><tr id="section-11">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-11">&#182;</a>
+  </div>
+  
+<p>We hit the top left corner</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
     <span class="k">if</span> center.x > rect_center.x <span class="o">and</span> center.y < rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x+size.x/2, rect_center.y-size.y/2), diag/2+radius) <span class="k">then</span>
-        <span class="c">-- We hit the top right corner
-</span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
+</pre></div>
+</td>
+</tr><tr id="section-12">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-12">&#182;</a>
+  </div>
+  
+<p>We hit the top right corner</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
     <span class="k">if</span> center.x > rect_center.x <span class="o">and</span> center.y > rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x+size.x/2, rect_center.y+size.y/2), diag/2+radius) <span class="k">then</span>
-        <span class="c">-- We hit the bottom right corner
-</span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
+</pre></div>
+</td>
+</tr><tr id="section-13">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-13">&#182;</a>
+  </div>
+  
+<p>We hit the bottom right corner</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
     <span class="k">end</span>
 
     <span class="k">if</span> center.x < rect_center.x <span class="o">and</span> center.y > rect_center.y <span class="o">and</span>
         center:dist(Point(rect_center.x-size.x/2, rect_center.y+size.y/2), diag/2+radius) <span class="k">then</span>
-        <span class="c">-- We hit the bottom left corner
-</span>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
-    <span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-14">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-14">&#182;</a>
+  </div>
+  
+<p>We hit the bottom left corner</p>
 
-    <span class="c">-- And we're close but not too close, so we are fine.
-</span>    <span class="k">return</span> <span class="k">false</span>
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">return</span> <span class="k">true</span>, (center-rect_center):normal()
+    <span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-15">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-15">&#182;</a>
+  </div>
+  
+<p>And we're close but not too close, so we are fine.</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>    <span class="k">return</span> <span class="k">false</span>
 <span class="k">end</span>
 </pre></div>
 </td>

@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -60,15 +60,16 @@
 
 </td>
 <td class="code">
-  <div class="highlight"><pre><span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+  <div class="highlight"><pre><span class="nt">require</span>(<span class="s">'sonnet.table'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.middleclass'</span>)
 <span class="k">local</span> Promise = <span class="nt">require</span>(<span class="s">'sonnet.Promise'</span>)
 
-<span class="k">local</span> Tween = sonnet.class(<span class="s">'Tween'</span>)
+<span class="k">local</span> Tween = class(<span class="s">'Tween'</span>)
 
-Tween.static.all = List()
+Tween.static.all = table()
 
 <span class="k">function</span> <span class="nf">Tween.static.update</span>(dt)
-   Tween.all:method_map(<span class="s">'update'</span>, dt)
+   Tween.all:method_each(<span class="s">'update'</span>, dt)
    Tween.static.all = Tween.all:method_select(<span class="s">'alive'</span>)
 <span class="k">end</span>
 
@@ -77,10 +78,22 @@ Tween.static.all = List()
     self.value = from
     self.from = from
     self.to = to
-    self.diff = to - from
+    self.diff = self.to - self.from
     self.time = 0
     self.duration = duration <span class="o">or</span> 1
     Tween.all:push(self)
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Tween.static.loop</span>(step_duration, ...)
+    <span class="k">local</span> steps = {...}
+    <span class="nt">assert</span>(#steps >= 2, <span class="s">'A tween needs at least two steps'</span>)
+
+    <span class="k">local</span> step1, step2 = table.remove(steps, 1), table.remove(steps, 1)
+    table.insert(steps, step1) ; table.insert(steps, step2)
+    <span class="k">local</span> t = Tween(step1, step2, step_duration)
+
+    t.steps = steps
+    <span class="k">return</span> t
 <span class="k">end</span>
 
 <span class="k">function</span> <span class="nf">Tween:stop</span>()
@@ -99,8 +112,18 @@ Tween.static.all = List()
 
     <span class="k">if</span> self.time >= self.duration <span class="k">then</span>
         self.value = self.to
-        self.finished = <span class="k">true</span>
-        <span class="k">if</span> self._promise <span class="k">then</span> self._promise:finish(self) <span class="k">end</span>
+
+        <span class="k">if</span> self.steps <span class="k">then</span> <span class="c">-- restart, go to the next step
+</span>            self.from = self.to
+            self.to = table.remove(self.steps, 1)
+            table.insert(self.steps, self.to)
+            self.time = 0
+            self.diff = self.to - self.from
+
+        <span class="k">else</span> <span class="c">-- No steps, just end
+</span>            self.finished = <span class="k">true</span>
+            <span class="k">if</span> self._promise <span class="k">then</span> self._promise:finish(self) <span class="k">end</span>
+        <span class="k">end</span>
     <span class="k">end</span>
 <span class="k">end</span>
 

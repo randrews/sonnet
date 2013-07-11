@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -61,10 +61,11 @@
 </td>
 <td class="code">
   <div class="highlight"><pre><span class="k">local</span> Point = <span class="nt">require</span>(<span class="s">'sonnet.Point'</span>)
-<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.table'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.middleclass'</span>)
 <span class="k">local</span> Map = <span class="nt">require</span>(<span class="s">'sonnet.Map'</span>)
 
-<span class="k">local</span> SparseMap = sonnet.class(<span class="s">'SparseMap'</span>)
+<span class="k">local</span> SparseMap = class(<span class="s">'SparseMap'</span>)
 
 <span class="k">function</span> <span class="nf">SparseMap:initialize</span>(width, height)
     self.width = width
@@ -72,9 +73,20 @@
 
     self.cells = {} <span class="c">-- map from x+y*w to value
 </span><span class="k">end</span>
+</pre></div>
+</td>
+</tr><tr id="section-2">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-2">&#182;</a>
+  </div>
+  
+<p>convert a point to a number to be used as an index to cells</p>
 
-<span class="c">-- convert a point to a number to be used as an index to cells
-</span><span class="k">function</span> <span class="nf">SparseMap:num</span>(pt)
+
+</td>
+<td class="code">
+  <div class="highlight"><pre><span class="k">function</span> <span class="nf">SparseMap:num</span>(pt)
     <span class="k">return</span> pt.x + pt.y * self.width
 <span class="k">end</span>
 
@@ -146,7 +158,7 @@ SparseMap.__call = SparseMap.at
        fn = <span class="k">function</span>(_, p) <span class="k">return</span> self:at(p) == val <span class="k">end</span>
    <span class="k">end</span>
 
-   <span class="k">local</span> fit = List{}
+   <span class="k">local</span> fit = table()
    <span class="k">for</span> _, p <span class="k">in</span> <span class="nt">ipairs</span>(all) <span class="k">do</span>
        <span class="k">if</span> self:at(p) <span class="o">and</span> (<span class="o">not</span> fn <span class="o">or</span> fn(self, p)) <span class="k">then</span> fit:push(p) <span class="k">end</span>
    <span class="k">end</span>
@@ -162,43 +174,88 @@ SparseMap.empty = Map.empty
 SparseMap.full = Map.full
 SparseMap.connected = Map.connected
 SparseMap.connected_value = Map.connected_value
+
+<span class="c">----------------------------------------
+</span>
+<span class="k">function</span> <span class="nf">SparseMap.static.test</span>()
 </pre></div>
 </td>
-</tr><tr id="section-2">
+</tr><tr id="section-3">
 <td class="docs">
   <div class="pilwrap">
-    <a class="pilcrow" href="#section-2">&#182;</a>
+    <a class="pilcrow" href="#section-3">&#182;</a>
   </div>
   
-<hr/>
+<p>Constructor</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
-<span class="k">function</span> <span class="nf">SparseMap.static.test</span>()
-   <span class="c">-- Constructor
-</span>   <span class="k">local</span> m = SparseMap(10, 10)
+  <div class="highlight"><pre>   <span class="k">local</span> m = SparseMap(10, 10)
    <span class="nt">assert</span>(m.width == 10)
    <span class="nt">assert</span>(m:inside(Point(3,3)))
    <span class="nt">assert</span>(<span class="o">not</span> m:inside(Point(10,10)))
+</pre></div>
+</td>
+</tr><tr id="section-4">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-4">&#182;</a>
+  </div>
+  
+<p>clear / set</p>
 
-   <span class="c">-- clear / set
-</span>   m:clear()
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   m:clear()
    m:at(Point(3,2),1)
+</pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<p>at</p>
 
-   <span class="c">-- at
-</span>   <span class="nt">assert</span>(m:at(Point(1,1)) == <span class="k">nil</span>)
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="nt">assert</span>(m:at(Point(1,1)) == <span class="k">nil</span>)
    <span class="nt">assert</span>(m:at(Point(3,2)) == 1)
    <span class="nt">assert</span>(m:at(Point(10,10)) == <span class="k">nil</span>)
+</pre></div>
+</td>
+</tr><tr id="section-6">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-6">&#182;</a>
+  </div>
+  
+<p>each</p>
 
-   <span class="c">-- each
-</span>   <span class="k">local</span> n = 0
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   <span class="k">local</span> n = 0
    <span class="k">for</span> p <span class="k">in</span> m:each() <span class="k">do</span> n = n + 1 <span class="k">end</span>
    <span class="nt">assert</span>(n == 1)
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<p>fit</p>
 
-   <span class="c">-- fit
-</span>   m:clear()
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>   m:clear()
    m:at(Point(1,0),1)
    m:at(Point(1,1),1)
    m:at(Point(1,2),1)

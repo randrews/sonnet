@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -56,79 +56,42 @@
     <a class="pilcrow" href="#section-1">&#182;</a>
   </div>
   
-<p>Broadcasts messages and lets things subscribe to messages.</p>
-
-<p>A <em>message</em> is a string, with an optional set of arguments:</p>
-<pre><code>Messenger.send("player_jump", player_loc)
-</code></pre>
-
-<p>A <em>subscriber</em> is a function that wants to be notified about
-that kind of message:</p>
-<pre><code>Messenger.subscribe("player_jump", handle_jump)
-</code></pre>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
-<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+  <div class="highlight"><pre><span class="c">--- Broadcasts messages and lets things subscribe to messages.
+</span><span class="c">---
+</span><span class="c">--- A *message* is a string, with an optional set of arguments:
+</span><span class="c">---     Messenger.send("player_jump", player_loc)
+</span><span class="c">---
+</span><span class="c">--- A *subscriber* is a function that wants to be notified about
+</span><span class="c">--- that kind of message:
+</span><span class="c">---     Messenger.subscribe("player_jump", handle_jump)
+</span>
+<span class="nt">require</span>(<span class="s">'sonnet.table'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.middleclass'</span>)
 
-<span class="k">local</span> Messenger = sonnet.class(<span class="s">'Messenger'</span>)
-</pre></div>
-</td>
-</tr><tr id="section-2">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-2">&#182;</a>
-  </div>
-  
-<h2>Subscription table</h2>
-<p>This maps from message name to <a href="List.html">List</a> of subscribers.
-The message names
-are always strings, the subscribers are either functions
-or tables containing {function_name, object} (if they used <code>method_subscribe</code>)</p>
+<span class="k">local</span> Messenger = class(<span class="s">'Messenger'</span>)
 
-<p>This may be swapped out and replaced when scenes are changed,
-see <a href="Scene.html">Scene</a>.</p>
+<span class="c">--- ## Subscription table
+</span><span class="c">--- This maps from message name to [List](List.html) of subscribers.
+</span><span class="c">--- The message names
+</span><span class="c">--- are always strings, the subscribers are either functions
+</span><span class="c">--- or tables containing {function_name, object} (if they used `method_subscribe`)
+</span><span class="c">---
+</span><span class="c">--- This may be swapped out and replaced when scenes are changed,
+</span><span class="c">--- see [Scene](Scene.html).
+</span>Messenger.static.subscriptions = {}
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>Messenger.static.subscriptions = {}
-</pre></div>
-</td>
-</tr><tr id="section-3">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-3">&#182;</a>
-  </div>
-  
-<hr/>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
-</pre></div>
-</td>
-</tr><tr id="section-4">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-4">&#182;</a>
-  </div>
-  
-<h2>Send</h2>
-<p>Send a message to all subscribers (if any)</p>
-
-<ul>
-    <li><strong>message</strong> is a string for the message type</li>
-    <li>Other args are passed to all the subscribers</li>
-</ul>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span>
+<span class="c">--- ## Send
+</span><span class="c">--- Send a message to all subscribers (if any)
+</span><span class="c">---
+</span><span class="c">--- - **message** is a string for the message type
+</span><span class="c">--- - Other args are passed to all the subscribers
+</span>
 <span class="k">function</span> <span class="nf">Messenger.static.send</span>(message, ...)
     <span class="k">local</span> sub_list = Messenger.subscriptions[message]
     <span class="k">if</span> sub_list <span class="k">then</span>
@@ -143,95 +106,46 @@ see <a href="Scene.html">Scene</a>.</p>
         <span class="k">end</span>
     <span class="k">end</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-5">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-5">&#182;</a>
-  </div>
-  
-<h2>Subscribe</h2>
-<p>Add a function to the subscriber list for a message type</p>
 
-<ul>
-    <li><strong>message</strong> is a string for the message type</li>
-    <li><strong>fn</strong> is the function to handle it</li>
-</ul>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Subscribe
+</span><span class="c">--- Add a function to the subscriber list for a message type
+</span><span class="c">---
+</span><span class="c">--- - **message** is a string for the message type
+</span><span class="c">--- - **fn** is the function to handle it
+</span>
 <span class="k">function</span> <span class="nf">Messenger.static.subscribe</span>(message, fn)
     <span class="k">if</span> <span class="o">not</span> Messenger.subscriptions[message] <span class="k">then</span>
-        Messenger.subscriptions[message] = List()
+        Messenger.subscriptions[message] = table()
     <span class="k">end</span>
 
     <span class="k">local</span> subs = Messenger.subscriptions[message]
     subs:push(fn)
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-6">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-6">&#182;</a>
-  </div>
-  
-<h2>Method Subscribe</h2>
-<p>Add an object method to the subscriber list for a message type</p>
 
-<ul>
-    <li><strong>message</strong> is a string for the message type</li>
-    <li><strong>obj</strong> is the object to invoke a method on</li>
-    <li><strong>method_name</strong> is the name of the method to invoke.</li>
-</ul>
-
-<p>method_name is optional, defaults to message.</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Method Subscribe
+</span><span class="c">--- Add an object method to the subscriber list for a message type
+</span><span class="c">---
+</span><span class="c">--- - **message** is a string for the message type
+</span><span class="c">--- - **obj** is the object to invoke a method on
+</span><span class="c">--- - **method_name** is the name of the method to invoke.
+</span><span class="c">---
+</span><span class="c">--- method_name is optional, defaults to message.
+</span>
 <span class="k">function</span> <span class="nf">Messenger.static.method_subscribe</span>(message, obj, method_name)
     <span class="k">if</span> <span class="o">not</span> Messenger.subscriptions[message] <span class="k">then</span>
-        Messenger.subscriptions[message] = List()
+        Messenger.subscriptions[message] = table()
     <span class="k">end</span>
 
     <span class="k">local</span> subs = Messenger.subscriptions[message]
     <span class="k">local</span> sub = {method_name <span class="o">or</span> message, obj}
     subs:push(sub)
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-7">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-7">&#182;</a>
-  </div>
-  
-<hr/>
 
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
-</pre></div>
-</td>
-</tr><tr id="section-8">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-8">&#182;</a>
-  </div>
-  
-<h2>Test</h2>
-<p>A unit test</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">----------------------------------------
+</span>
+<span class="c">--- ## Test
+</span><span class="c">--- A unit test
+</span>
 <span class="k">function</span> <span class="nf">Messenger.static.test</span>()
     <span class="k">local</span> a = <span class="k">false</span>
     <span class="k">local</span> a2 = <span class="k">false</span>

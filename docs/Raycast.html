@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -56,16 +56,39 @@
     <a class="pilcrow" href="#section-1">&#182;</a>
   </div>
   
-<p><strong>Raycast</strong> is a module of functions to perform raycasting
-against various primitives.</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
+  <div class="highlight"><pre><span class="c">--- **Raycast** is a module of functions to perform raycasting
+</span><span class="c">--- against various primitives.
+</span>
 <span class="nt">module</span>(..., package.seeall)
-<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.table'</span>)
 <span class="k">local</span> Point = <span class="nt">require</span>(<span class="s">'sonnet.Point'</span>)
+
+<span class="c">--- ## Common patterns
+</span><span class="c">---
+</span><span class="c">--- Most of these take a ray and some primitive. The ray is
+</span><span class="c">--- always represented as two `Point`s: a starting point, and
+</span><span class="c">--- a vector from the starting point.
+</span><span class="c">---
+</span><span class="c">--- They return either a Point or a numerically-indexed table
+</span><span class="c">--- (not a `List`) of Points, depending on the number of
+</span><span class="c">--- possible intersections; so, raycasting against a line segment
+</span><span class="c">--- will return a `Point` or nil, against a polygon will return
+</span><span class="c">--- an array of Points or an empty array, etc.
+</span>
+<span class="c">--- ## line
+</span><span class="c">---
+</span><span class="c">--- Intersection of a ray and a line segment
+</span><span class="c">---
+</span><span class="c">--- - `rpt`, `rvec` are the ray
+</span><span class="c">---
+</span><span class="c">--- - `line1`, `line2` are the endpoints of the
+</span><span class="c">---   line segment.
+</span>
+<span class="k">function</span> <span class="nf">line</span>(rpt, rvec, line1, line2)
 </pre></div>
 </td>
 </tr><tr id="section-2">
@@ -74,47 +97,12 @@ against various primitives.</p>
     <a class="pilcrow" href="#section-2">&#182;</a>
   </div>
   
-<h2>Common patterns</h2>
-
-<p>Most of these take a ray and some primitive. The ray is
-always represented as two <code>Point</code>s: a starting point, and
-a vector from the starting point.</p>
-
-<p>They return either a Point or a numerically-indexed table
-(not a <code>List</code>) of Points, depending on the number of
-possible intersections; so, raycasting against a line segment
-will return a <code>Point</code> or nil, against a polygon will return
-an array of Points or an empty array, etc.</p>
+<p>Find the slope and y-icpt of the ray and the line</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
-</pre></div>
-</td>
-</tr><tr id="section-3">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-3">&#182;</a>
-  </div>
-  
-<h2>line</h2>
-
-<p>Intersection of a ray and a line segment</p>
-
-<ul>
-    <li><p><code>rpt</code>, <code>rvec</code> are the ray</p></li>
-    <li><p><code>line1</code>, <code>line2</code> are the endpoints of the
-    line segment.</p></li>
-</ul>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
-<span class="k">function</span> <span class="nf">line</span>(rpt, rvec, line1, line2)
-    <span class="c">-- Find the slope and y-icpt of the ray and the line
-</span>    <span class="k">local</span> rm, rb = slope_intercept(rpt, rvec)
+  <div class="highlight"><pre>    <span class="k">local</span> rm, rb = slope_intercept(rpt, rvec)
     <span class="k">local</span> lm, lb = slope_intercept(line1, line2-line1)
 
     <span class="k">local</span> xmin = math.min(line1.x, line2.x)
@@ -127,48 +115,20 @@ an array of Points or an empty array, etc.</p>
 
     <span class="k">elseif</span> line1.x == line2.x <span class="k">then</span> <span class="c">-- vertical line special case
 </span>        <span class="k">local</span> i = Point(line1.x, rm * line1.x + rb)
+</pre></div>
+</td>
+</tr><tr id="section-3">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-3">&#182;</a>
+  </div>
+  
+<p>Is the intersection actually on the segment?</p>
 
-        <span class="c">-- Is the intersection actually on the segment?
-</span>        <span class="k">if</span> i.y >= ymin <span class="o">and</span> i.y <= ymax <span class="k">then</span>
-            <span class="c">-- Is the intersection actually being pointed at by the ray?
-</span>            <span class="k">local</span> dx = i.x - rpt.x
-            <span class="k">if</span> dx < 0 <span class="o">and</span> rvec.x < 0 <span class="o">or</span> dx > 0 <span class="o">and</span> rvec.x > 0 <span class="k">then</span>
-                <span class="k">return</span> i
-            <span class="k">end</span>
-        <span class="k">end</span>
 
-    <span class="k">elseif</span> math.abs(rvec.x) < 0.0001 <span class="k">then</span> <span class="c">-- vertical ray special case
-</span>        <span class="c">-- Sometimes atan2 gives us very small nonzero values, that we should really
-</span>        <span class="c">-- treat as zeros because they don't work with the general algorithm, so we round.
-</span>        <span class="c">-- The problem is that dx is effectively 0 so the "pointing at" check fails.
-</span>        <span class="k">local</span> i = Point(rpt.x, lm * rpt.x + lb)
-
-        <span class="c">-- Is the intersection actually on the segment?
-</span>        <span class="k">if</span> i.x >= xmin <span class="o">and</span> i.x <= xmax <span class="k">then</span>
-            <span class="c">-- Is the intersection actually being pointed at by the ray?
-</span>            <span class="k">local</span> dy = i.y - rpt.y
-            <span class="k">if</span> dy < 0 <span class="o">and</span> rvec.y < 0 <span class="o">or</span> dy > 0 <span class="o">and</span> rvec.y > 0 <span class="k">then</span>
-                <span class="k">return</span> i
-            <span class="k">end</span>
-        <span class="k">end</span>
-
-    <span class="k">else</span> <span class="c">-- Normal intersecting lines
-</span>        <span class="c">-- okay, they intersect, but where?
-</span>        <span class="c">-- rm * x + rb == lm * x + lb
-</span>        <span class="c">-- x == (lb - rb) / (rm - lm)
-</span>        <span class="k">local</span> ix = (lb - rb) / (rm - lm)
-
-        <span class="c">-- Is the intersection actually on the segment?
-</span>        <span class="k">if</span> ix >= xmin <span class="o">and</span> ix <= xmax <span class="k">then</span>
-
-            <span class="c">-- Is the intersection actually being pointed at by the ray?
-</span>            <span class="k">local</span> dx = ix - rpt.x
-            <span class="k">if</span> dx < 0 <span class="o">and</span> rvec.x < 0 <span class="o">or</span> dx > 0 <span class="o">and</span> rvec.x > 0 <span class="k">then</span>
-                <span class="k">return</span> Point(ix, rm*ix+rb)
-            <span class="k">end</span>
-        <span class="k">end</span>
-    <span class="k">end</span>
-<span class="k">end</span>
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">if</span> i.y >= ymin <span class="o">and</span> i.y <= ymax <span class="k">then</span>
 </pre></div>
 </td>
 </tr><tr id="section-4">
@@ -177,18 +137,126 @@ an array of Points or an empty array, etc.</p>
     <a class="pilcrow" href="#section-4">&#182;</a>
   </div>
   
-<h2>polygon</h2>
-
-<ul>
-    <li><p><code>rpt</code>, <code>rvec</code> are a ray</p></li>
-    <li><p>The other arguments are all points, the vertices
-    of the polygon (in order)</p></li>
-</ul>
+<p>Is the intersection actually being pointed at by the ray?</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
+  <div class="highlight"><pre>            <span class="k">local</span> dx = i.x - rpt.x
+            <span class="k">if</span> dx < 0 <span class="o">and</span> rvec.x < 0 <span class="o">or</span> dx > 0 <span class="o">and</span> rvec.x > 0 <span class="k">then</span>
+                <span class="k">return</span> i
+            <span class="k">end</span>
+        <span class="k">end</span>
+
+    <span class="k">elseif</span> math.abs(rvec.x) < 0.0001 <span class="k">then</span> <span class="c">-- vertical ray special case
+</span></pre></div>
+</td>
+</tr><tr id="section-5">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-5">&#182;</a>
+  </div>
+  
+<p>Sometimes atan2 gives us very small nonzero values, that we should really
+treat as zeros because they don't work with the general algorithm, so we round.
+The problem is that dx is effectively 0 so the "pointing at" check fails.</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">local</span> i = Point(rpt.x, lm * rpt.x + lb)
+</pre></div>
+</td>
+</tr><tr id="section-6">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-6">&#182;</a>
+  </div>
+  
+<p>Is the intersection actually on the segment?</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">if</span> i.x >= xmin <span class="o">and</span> i.x <= xmax <span class="k">then</span>
+</pre></div>
+</td>
+</tr><tr id="section-7">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-7">&#182;</a>
+  </div>
+  
+<p>Is the intersection actually being pointed at by the ray?</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>            <span class="k">local</span> dy = i.y - rpt.y
+            <span class="k">if</span> dy < 0 <span class="o">and</span> rvec.y < 0 <span class="o">or</span> dy > 0 <span class="o">and</span> rvec.y > 0 <span class="k">then</span>
+                <span class="k">return</span> i
+            <span class="k">end</span>
+        <span class="k">end</span>
+
+    <span class="k">else</span> <span class="c">-- Normal intersecting lines
+</span></pre></div>
+</td>
+</tr><tr id="section-8">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-8">&#182;</a>
+  </div>
+  
+<p>okay, they intersect, but where?
+rm * x + rb == lm * x + lb
+x == (lb - rb) / (rm - lm)</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">local</span> ix = (lb - rb) / (rm - lm)
+</pre></div>
+</td>
+</tr><tr id="section-9">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-9">&#182;</a>
+  </div>
+  
+<p>Is the intersection actually on the segment?</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>        <span class="k">if</span> ix >= xmin <span class="o">and</span> ix <= xmax <span class="k">then</span>
+</pre></div>
+</td>
+</tr><tr id="section-10">
+<td class="docs">
+  <div class="pilwrap">
+    <a class="pilcrow" href="#section-10">&#182;</a>
+  </div>
+  
+<p>Is the intersection actually being pointed at by the ray?</p>
+
+
+</td>
+<td class="code">
+  <div class="highlight"><pre>            <span class="k">local</span> dx = ix - rpt.x
+            <span class="k">if</span> dx < 0 <span class="o">and</span> rvec.x < 0 <span class="o">or</span> dx > 0 <span class="o">and</span> rvec.x > 0 <span class="k">then</span>
+                <span class="k">return</span> Point(ix, rm*ix+rb)
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c">--- ## polygon
+</span><span class="c">---
+</span><span class="c">--- - `rpt`, `rvec` are a ray
+</span><span class="c">---
+</span><span class="c">--- - The other arguments are all points, the vertices
+</span><span class="c">---   of the polygon (in order)
+</span>
 <span class="k">function</span> <span class="nf">polygon</span>(rpt, rvec, ...)
     <span class="k">local</span> corners = {...}
     <span class="k">local</span> intersections = {}
@@ -200,26 +268,14 @@ an array of Points or an empty array, etc.</p>
     <span class="k">end</span>
     <span class="k">return</span> intersections
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-5">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-5">&#182;</a>
-  </div>
-  
-<h2>rectangle</h2>
 
-<ul>
-    <li><p><code>rpt</code>, <code>rvec</code> are a ray</p></li>
-    <li><p><code>topleft</code> and <code>size</code> are the top left corner
-    and the size of a rectangle, as <code>Point</code>s.</p></li>
-</ul>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## rectangle
+</span><span class="c">---
+</span><span class="c">--- - `rpt`, `rvec` are a ray
+</span><span class="c">---
+</span><span class="c">--- - `topleft` and `size` are the top left corner
+</span><span class="c">---   and the size of a rectangle, as `Point`s.
+</span>
 <span class="k">function</span> <span class="nf">rectangle</span>(rpt, rvec, topleft, size)
     <span class="k">return</span> polygon(rpt, rvec,
                    topleft,
@@ -227,24 +283,13 @@ an array of Points or an empty array, etc.</p>
                    topleft+size,
                    topleft+Point(0, size.y))
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-6">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-6">&#182;</a>
-  </div>
-  
-<h2>slope intercept</h2>
 
-<p>Takes a point and a vector from that point, and
-returns the slope and y-intercept of the resulting
-line.</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre><span class="k">function</span> <span class="nf">slope_intercept</span>(pt, vec)
+<span class="c">--- ## slope intercept
+</span><span class="c">---
+</span><span class="c">--- Takes a point and a vector from that point, and
+</span><span class="c">--- returns the slope and y-intercept of the resulting
+</span><span class="c">--- line.
+</span><span class="k">function</span> <span class="nf">slope_intercept</span>(pt, vec)
     <span class="k">local</span> m = vec.y / vec.x
     <span class="k">local</span> b = pt.y - pt.x * m
     <span class="k">return</span> m, b

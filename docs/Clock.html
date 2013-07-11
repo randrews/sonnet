@@ -16,7 +16,6 @@
   <a class="source" href="Clock.html">Clock.lua</a>
   <a class="source" href="Effect.html">Effect.lua</a>
   <a class="source" href="init.html">init.lua</a>
-  <a class="source" href="List.html">List.lua</a>
   <a class="source" href="Map.html">Map.lua</a>
   <a class="source" href="Math.html">Math.lua</a>
   <a class="source" href="Messenger.html">Messenger.lua</a>
@@ -27,6 +26,7 @@
   <a class="source" href="Scene.html">Scene.lua</a>
   <a class="source" href="Set.html">Set.lua</a>
   <a class="source" href="SparseMap.html">SparseMap.lua</a>
+  <a class="source" href="table.html">table.lua</a>
   <a class="source" href="Tween.html">Tween.lua</a>
   <a class="source" href="utils.html">utils.lua</a>
   <a class="source" href="Bullet.html">effects/Bullet.lua</a>
@@ -56,56 +56,35 @@
     <a class="pilcrow" href="#section-1">&#182;</a>
   </div>
   
-<p>A <strong>Clock</strong> takes a callback function and a delay time
-and calls the function at that interval.</p>
 
 
 </td>
 <td class="code">
-  <div class="highlight"><pre>
-<span class="k">local</span> List = <span class="nt">require</span>(<span class="s">'sonnet.List'</span>)
-<span class="k">local</span> Clock = sonnet.class(<span class="s">'Clock'</span>)
-</pre></div>
-</td>
-</tr><tr id="section-2">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-2">&#182;</a>
-  </div>
-  
-<p>The list of all Clocks. Used by <code>Clock.all</code>
-to update all active Clocks every frame.
-This may be swapped out by Scene; Clocks are
-local to the Scene they were declared in.</p>
+  <div class="highlight"><pre><span class="c">--- A **Clock** takes a callback function and a delay time
+</span><span class="c">--- and calls the function at that interval.
+</span>
+<span class="nt">require</span>(<span class="s">'sonnet.table'</span>)
+<span class="nt">require</span>(<span class="s">'sonnet.middleclass'</span>)
+<span class="k">local</span> Clock = class(<span class="s">'Clock'</span>)
 
+<span class="c">--- The list of all Clocks. Used by `Clock.all`
+</span><span class="c">--- to update all active Clocks every frame.
+</span><span class="c">--- This may be swapped out by Scene; Clocks are
+</span><span class="c">--- local to the Scene they were declared in.
+</span>
+Clock.all = table()
 
-</td>
-<td class="code">
-  <div class="highlight"><pre>
-Clock.all = List()
-</pre></div>
-</td>
-</tr><tr id="section-3">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-3">&#182;</a>
-  </div>
-  
-<h2>Initialize</h2>
-
-<p>Constructor</p>
-
-<ul>
-    <li><p><code>delay</code> is the amount of time between calls
-    (and the amount of time before the first one)</p></li>
-    <li><p><code>callback</code> is the function to call.</p></li>
-    <li><p>All other arguments are passed to the callback.</p></li>
-</ul>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Initialize
+</span><span class="c">---
+</span><span class="c">--- Constructor
+</span><span class="c">---
+</span><span class="c">--- - `delay` is the amount of time between calls
+</span><span class="c">--- (and the amount of time before the first one)
+</span><span class="c">---
+</span><span class="c">--- - `callback` is the function to call.
+</span><span class="c">---
+</span><span class="c">--- - All other arguments are passed to the callback.
+</span>
 <span class="k">function</span> <span class="nf">Clock:initialize</span>(delay, callback, ...)
    <span class="nt">assert</span>(delay > 0, <span class="s">"Delay must be greater than 0 seconds"</span>)
    <span class="nt">assert</span>(callback, <span class="s">"Clocks must have a callback, otherwise what's the point?"</span>)
@@ -117,28 +96,17 @@ Clock.all = List()
 
    Clock.all:push(self)
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-4">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-4">&#182;</a>
-  </div>
-  
-<h2>Oneoff</h2>
 
-<p>Create a Clock that is called once and stops. This
-essentially just calls the callback after the specified
-delay.</p>
-
-<p>Arguments are the same as the normal constructor.</p>
-
-<p>Returns a Clock.</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Oneoff
+</span><span class="c">---
+</span><span class="c">--- Create a Clock that is called once and stops. This
+</span><span class="c">--- essentially just calls the callback after the specified
+</span><span class="c">--- delay.
+</span><span class="c">---
+</span><span class="c">--- Arguments are the same as the normal constructor.
+</span><span class="c">---
+</span><span class="c">--- Returns a Clock.
+</span>
 <span class="k">function</span> <span class="nf">Clock.static.oneoff</span>(delay, callback, ...)
    <span class="nt">assert</span>(delay > 0, <span class="s">"Delay must be greater than 0 seconds"</span>)
    <span class="nt">assert</span>(callback, <span class="s">"Clocks must have a callback, otherwise what's the point?"</span>)
@@ -152,26 +120,15 @@ delay.</p>
 
    <span class="k">return</span> c
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-5">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-5">&#182;</a>
-  </div>
-  
-<h2>Update</h2>
 
-<p>Inform this Clock that time has passed; this may cause
-it to call the callback.</p>
-
-<p>You shouldn't call this manually, call the static
-<code>Clock.update()</code> instead.</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Update
+</span><span class="c">---
+</span><span class="c">--- Inform this Clock that time has passed; this may cause
+</span><span class="c">--- it to call the callback.
+</span><span class="c">---
+</span><span class="c">--- You shouldn't call this manually, call the static
+</span><span class="c">--- `Clock.update()` instead.
+</span>
 <span class="k">function</span> <span class="nf">Clock:update</span>(dt)
    self.elapsed = self.elapsed + dt
    <span class="k">if</span> self.elapsed >= self.delay <span class="k">then</span>
@@ -179,48 +136,24 @@ it to call the callback.</p>
       self.elapsed = 0
    <span class="k">end</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-6">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-6">&#182;</a>
-  </div>
-  
-<h2>Stop</h2>
 
-<p>Stop this clock from running.</p>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Stop
+</span><span class="c">---
+</span><span class="c">--- Stop this clock from running.
+</span>
 <span class="k">function</span> <span class="nf">Clock:stop</span>()
-    <span class="k">if</span> <span class="o">not</span> Clock.all:remove(self) <span class="k">then</span>
+    <span class="k">if</span> <span class="o">not</span> Clock.all:remove_item(self) <span class="k">then</span>
         <span class="nt">error</span>(<span class="s">"Clock not active!"</span>)
     <span class="k">end</span>
 <span class="k">end</span>
-</pre></div>
-</td>
-</tr><tr id="section-7">
-<td class="docs">
-  <div class="pilwrap">
-    <a class="pilcrow" href="#section-7">&#182;</a>
-  </div>
-  
-<h2>Update</h2>
 
-<p>Updates all Clocks. This is called automatically by Scene
-so you should only need to use it if you're not using Scenes.</p>
-
-<ul>
-    <li><code>dt</code> is the time delta for this frame.</li>
-</ul>
-
-
-</td>
-<td class="code">
-  <div class="highlight"><pre>
+<span class="c">--- ## Update
+</span><span class="c">---
+</span><span class="c">--- Updates all Clocks. This is called automatically by Scene
+</span><span class="c">--- so you should only need to use it if you're not using Scenes.
+</span><span class="c">---
+</span><span class="c">--- - `dt` is the time delta for this frame.
+</span>
 <span class="k">function</span> <span class="nf">Clock.static.update</span>(dt)
     Clock.all:method_each(<span class="s">'update'</span>, dt)
 <span class="k">end</span>

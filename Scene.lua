@@ -109,10 +109,30 @@ end
 --- with their updates.
 
 function Scene:update_with_sonnet(dt)
+    self:update_fps(dt)
     Clock.update(dt)
     Tween.update(dt)
     Effect.update(dt)
     self:update(dt)
+end
+
+-- ## `update_fps`
+-- Update our count of time and total fps count
+
+function Scene:update_fps(dt)
+    if not self.frame_count then
+        self.frame_time = 0
+        self.frame_count = 0
+    end
+
+    self.frame_time = self.frame_time + dt
+    self.frame_count = self.frame_count + 1
+
+    if self.frame_time >= 1.0 then
+        self.frames_last_second = self.frame_count
+        self.frame_count = 0
+        self.frame_time = 0
+    end
 end
 
 --- ## `draw_with_sonnet`
@@ -121,6 +141,14 @@ end
 function Scene:draw_with_sonnet(dt)
     self:draw()
     Effect.draw()
+end
+
+--- ## `fps`
+--- Draw the FPS in the upper left corner
+
+function Scene:fps()
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.print(self.frames_last_second or '--', 10, 10)
 end
 
 --- ## `pause`

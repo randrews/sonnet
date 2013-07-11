@@ -10,6 +10,13 @@ function Point:initialize(x,y)
    self.y = y
 end
 
+function Point.static.from_key(k)
+    if k == 'up' or k == 'w' then return Point.north
+    elseif k == 'down' or k == 's' then return Point.south
+    elseif k == 'right' or k == 'd' then return Point.east
+    elseif k == 'left' or k == 'a' then return Point.west end
+end
+
 function Point.static.from_angle(a)
     return Point(math.cos(a), -math.sin(a))
 end

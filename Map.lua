@@ -8,9 +8,8 @@ function Map:initialize(width, height, fill)
     self.width = width
     self.height = height
 
-    local c = {}
-    for i=1, width*height do c[i]=fill end
-    self.cells = table(c)
+    self.cells = table()
+    for i=0, width*height-1 do self.cells[i]=fill end
 end
 
 function Map.static.new_from_strings(strs)

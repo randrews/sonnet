@@ -23,6 +23,7 @@ effects.RisingText = require('sonnet.effects.RisingText')
 effects.Sparks = require('sonnet.effects.Sparks')
 effects.Spray = require('sonnet.effects.Spray')
 effects.Bullet = require('sonnet.effects.Bullet')
+effects.Dim = require('sonnet.effects.Dim')
 
 function sonnet.test()
     Point.test()

@@ -132,8 +132,10 @@ SparseMap.__call = SparseMap.at
               <span class="k">until</span> <span class="o">not</span> current <span class="o">or</span> valid(current)
 
               <span class="k">if</span> current <span class="k">then</span>
-                  <span class="k">return</span> Point(current  self.width,
-                               math.floor(current / self.width))
+                  <span class="k">local</span> p = Point(current  self.width,
+                                  math.floor(current / self.width))
+                  <span class="k">return</span> p, self:at(p)
+                  
               <span class="k">else</span>
                   <span class="k">return</span> <span class="k">nil</span>
               <span class="k">end</span>

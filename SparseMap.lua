@@ -59,8 +59,10 @@ function SparseMap:each(start, w, h)
               until not current or valid(current)
 
               if current then
-                  return Point(current % self.width,
-                               math.floor(current / self.width))
+                  local p = Point(current % self.width,
+                                  math.floor(current / self.width))
+                  return p, self:at(p)
+                  
               else
                   return nil
               end

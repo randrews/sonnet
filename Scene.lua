@@ -83,6 +83,7 @@ function Scene:draw() end
 function Scene:keypressed(key, unicode) end
 function Scene:keyreleased(key) end
 function Scene:mousepressed(x, y, button) end
+function Scene:mousereleased(x, y, button) end
 
 --- ## Scene:install
 --- Installs this scene as the current scene (the one that
@@ -95,9 +96,26 @@ function Scene:install()
     self:on_install()
     love.update = function(dt) self:update_with_sonnet(dt) end
     love.draw = function() self:draw_with_sonnet() end
-    love.keypressed = function(k, u) self:keypressed(k, u) end
-    love.keyreleased = function(k) self:keyreleased(k) end
-    love.mousepressed = function(x, y, b) self:mousepressed(x, y, b) end
+
+    love.keypressed = function(k, u)
+                          self:keypressed(k, u)
+                          if loveframes then loveframes.keypressed(k, u) end
+                      end
+
+    love.keyreleased = function(k)
+                           self:keyreleased(k)
+                           if loveframes then loveframes.keyreleased(k) end
+                       end
+
+    love.mousepressed = function(x, y, b)
+                            self:mousepressed(x, y, b)
+                            if loveframes then loveframes.mousepressed(x, y, b) end
+                        end
+
+    love.mousereleased = function(x, y, b)
+                             self:mousereleased(x, y, b)
+                             if loveframes then loveframes.mousereleased(x, y, b) end
+                         end
 end
 
 ----------------------------------------
@@ -114,6 +132,8 @@ function Scene:update_with_sonnet(dt)
     Tween.update(dt)
     Effect.update(dt)
     self:update(dt)
+
+    if loveframes then loveframes.update(dt) end
 end
 
 -- ## `update_fps`
@@ -141,6 +161,7 @@ end
 function Scene:draw_with_sonnet(dt)
     self:draw()
     Effect.draw()
+    if loveframes then loveframes.draw() end
 end
 
 --- ## `fps`

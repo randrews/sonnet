@@ -33,3 +33,18 @@ function sonnet.test()
     SparseMap.test()
     Tween.test()
 end
+
+function copy(tbl)
+    local new = {}
+
+    for k, v in pairs(tbl) do
+        if type(v) == 'table' then
+            new[k] = copy(v)
+        else
+            new[k] = v
+        end
+    end
+
+    setmetatable(new, getmetatable(tbl))
+    return new
+end

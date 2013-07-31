@@ -127,7 +127,8 @@ end
 ----------------------------------------
 
 function Map:empty(pt)
-   return self:at(pt) == ''
+    local v = self:at(pt)
+    return v == '' or v == 0
 end
 
 function Map:full(pt)

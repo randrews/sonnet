@@ -97,7 +97,7 @@ function table:method_map(fn_name, ...)
     for _, item in ipairs(self) do
         local fn = item[fn_name]
         local r = fn(item, ...)
-        if r then result:push(r) end
+        if r~=nil then result:push(r) end
     end
 
     return result
@@ -110,7 +110,7 @@ function table:each(fn, ...)
         end
     else -- No argument, return an iterator
         local it = function(t, n)
-                       if t[n+1] then return n+1, t[n+1] end
+                       if t[n+1]~=nil then return n+1, t[n+1] end
                    end
 
         return it, self, 0
